@@ -29,6 +29,16 @@ export function cleanPhoneNumber(phone?: string): string {
   return digitsOnly;
 }
 
+export function sanitizeUrl(url?: string, fallback = ''): string {
+  if (!url) return fallback;
+  const trimmed = url.trim();
+  // Safe protocols: http, https, data:image, mailto, tel, relative
+  if (/^(https?:\/\/|data:image\/(png|jpeg|jpg|webp|gif|svg\+xml);base64,|tel:|mailto:|\/|\.\/)/i.test(trimmed)) {
+    return trimmed;
+  }
+  return fallback;
+}
+
 export function numberToIndianWords(num: number): string {
   if (isNaN(num) || num === undefined || num === null) return 'Zero Rupees Only';
 

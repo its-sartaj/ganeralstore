@@ -1,8 +1,0 @@
-{
-  "name": "Khurshid General Store",
-  "description": "Online grocery store and billing system with real product photos, dual contact numbers (9162288060 & 8587079786), instant bill/invoice generator, and admin inventory management.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { MessageCircle, Receipt, Truck, MapPin } from 'lucide-react';
 import { CartItem, StoreSettings } from '../types';
-import { formatCurrency, cleanPhoneNumber } from '../lib/utils';
+import { formatCurrency, cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -238,7 +238,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </p>
                 <div className="pt-0.5">
                   <a
-                    href={settings.googleMapsUrl || 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'}
+                    href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[10px] font-bold text-[#B14B2C] hover:underline flex items-center gap-1"

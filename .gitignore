@@ -1,8 +1,12 @@
 node_modules/
-build/
 dist/
+build/
 coverage/
 .DS_Store
 *.log
+*.exe
+*.cjs
+*.tgz
 .env*
-!.env.example
+.system_generated/
+

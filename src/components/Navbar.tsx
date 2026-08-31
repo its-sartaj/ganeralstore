@@ -7,7 +7,7 @@ import {
   MapPin 
 } from 'lucide-react';
 import { StoreSettings } from '../types';
-import { formatCurrency, cleanPhoneNumber } from '../lib/utils';
+import { formatCurrency, cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
 
 interface NavbarProps {
   settings: StoreSettings;
@@ -46,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-2 sm:gap-3 text-xs shrink-0 font-mono">
             {/* Google Maps Link Button (Hidden on tiny screens to prevent wrap) */}
             <a
-              href={settings.googleMapsUrl || 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'}
+              href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden md:flex items-center gap-1 bg-white/10 hover:bg-white/20 text-[#F1EAD9] hover:text-white px-2 py-0.5 rounded-full font-bold transition-all border border-white/20"

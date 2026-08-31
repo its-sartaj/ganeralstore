@@ -6,7 +6,7 @@ import {
   Store
 } from 'lucide-react';
 import { StoreSettings } from '../types';
-import { cleanPhoneNumber } from '../lib/utils';
+import { cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
 
 interface HeroBannerProps {
   settings: StoreSettings;
@@ -60,7 +60,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
             {/* Google Maps Location Button */}
             <a
-              href={settings.googleMapsUrl || 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'}
+              href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#B14B2C] text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-[5px_12px_5px_12px] sm:rounded-[5px_16px_5px_16px] font-bold text-xs sm:text-base border-[1.5px] border-[#241F18] shadow-[2.5px_2.5px_0_#241F18] sm:shadow-[4px_4px_0_#241F18] hover:bg-[#8F371C] transition-all cursor-pointer touch-manipulation text-center"
@@ -184,7 +184,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             {/* Address & Direct Maps link on Signboard */}
             <div className="mt-2.5 pt-2 border-t border-dashed border-white/20 space-y-1.5 w-full">
               <a
-                href={settings.googleMapsUrl || 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'}
+                href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[10px] sm:text-[11px] text-[#F1EAD9] hover:text-[#C68A2E] flex items-center justify-between gap-1 bg-black/20 px-2 py-1.5 rounded-lg border border-white/10 hover:border-[#C68A2E] transition-all group w-full overflow-hidden"

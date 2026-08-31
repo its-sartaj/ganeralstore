@@ -8,7 +8,7 @@ import {
   Lock 
 } from 'lucide-react';
 import { StoreSettings } from '../types';
-import { cleanPhoneNumber } from '../lib/utils';
+import { cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
 
 interface FooterProps {
   settings: StoreSettings;
@@ -46,7 +46,7 @@ export const Footer: React.FC<FooterProps> = ({
             {/* Google Maps Location & Delivery Radius Card */}
             <div className="bg-white/10 p-3 rounded-xl border border-white/15 space-y-2">
               <a
-                href={settings.googleMapsUrl || 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'}
+                href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 bg-[#B14B2C] hover:bg-[#8F371C] text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-[#241F18] shadow-xs transition-colors"

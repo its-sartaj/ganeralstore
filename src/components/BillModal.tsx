@@ -443,19 +443,18 @@ export const BillModal: React.FC<BillModalProps> = ({
                     </div>
 
                     <div className="bg-white p-2.5 rounded-xl shadow-md shrink-0 flex flex-col items-center">
-                      {/* Generative QR visual representation */}
-                      <div className="w-28 h-28 bg-slate-900 rounded-lg p-1.5 flex flex-col justify-between">
-                        <div className="flex justify-between">
-                          <div className="w-7 h-7 bg-white rounded-xs p-1 flex items-center justify-center"><div className="w-3.5 h-3.5 bg-slate-900" /></div>
-                          <div className="w-7 h-7 bg-white rounded-xs p-1 flex items-center justify-center"><div className="w-3.5 h-3.5 bg-slate-900" /></div>
-                        </div>
-                        <div className="text-center font-mono text-[9px] text-emerald-400 font-bold">KGS UPI PAY</div>
-                        <div className="flex justify-between">
-                          <div className="w-7 h-7 bg-white rounded-xs p-1 flex items-center justify-center"><div className="w-3.5 h-3.5 bg-slate-900" /></div>
-                          <div className="w-4 h-4 bg-emerald-400 rounded-xs" />
-                        </div>
-                      </div>
-                      <span className="text-[10px] text-slate-800 font-bold mt-1">₹{invoice.totalAmount}</span>
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=4&data=${encodeURIComponent(
+                          `upi://pay?pa=${settings.upiId}&pn=${encodeURIComponent(settings.storeName)}&am=${invoice.totalAmount}&cu=INR`
+                        )}`}
+                        alt="UPI Payment QR Code"
+                        className="w-28 h-28 object-contain rounded-lg border border-slate-200"
+                        onError={(e) => {
+                          // Fallback to SVG placeholder if offline
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                      <span className="text-[11px] text-slate-900 font-bold mt-1 font-mono">₹{invoice.totalAmount}</span>
                     </div>
                   </div>
                 )}
