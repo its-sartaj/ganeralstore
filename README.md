@@ -1,4 +1,3 @@
-# 🛒 Khurshid General Store (खुरशीद जनरल स्टोर)
 
 > **"Roz ka Saaman, Ghar Tak"** — Modern Digital Kirana & Billing Platform.
 
@@ -62,26 +61,5 @@ npm run dev
 ```bash
 npm run build
 ```
-
----
-
-## 🔐 Admin Panel Access
-
-1. **URL Shortcut**: Append `#admin` to the website URL (e.g. `https://its-sartaj.github.io/ganeralstore/#admin`)
-2. **Keyboard Shortcut**: Press `Alt + A` or `Ctrl + Shift + A` anywhere on the website.
-3. **Footer Link**: Click the **"Store Admin & POS"** link at the bottom of the footer.
-4. **Default PIN**: `kgs2026`
-
----
-
-## 📍 Store Details
-- **Store Name**: Khurshid General Store
-- **Address**: Rupaulia Birta Road, Near Birta Masjid, Ward No. 11, Phenhara, Bihar - 845430
-- **Helpline 1**: +91 9162288060
-- **Helpline 2**: +91 8587079786
-- **UPI ID**: `9162288060@upi`
-
----
-
 ## 📄 License
 MIT License © 2026 Khurshid General Store
