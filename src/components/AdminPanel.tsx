@@ -13,10 +13,14 @@ import {
   ExternalLink, 
   LogOut, 
   Store, 
-  MapPin 
+  MapPin,
+  Download,
+  RotateCcw,
+  RefreshCw,
+  Radio
 } from 'lucide-react';
 import { Product, StoreSettings, Invoice, CartItem } from '../types';
-import { INITIAL_CATEGORIES } from '../data/initialProducts';
+import { INITIAL_CATEGORIES, INITIAL_PRODUCTS } from '../data/initialProducts';
 import { formatCurrency, cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
 
 interface AdminPanelProps {
@@ -28,6 +32,8 @@ interface AdminPanelProps {
   onAddProduct: (product: Product) => void;
   onUpdateProduct: (product: Product) => void;
   onDeleteProduct: (productId: string) => void;
+  onResetProducts?: () => void;
+  onImportProducts?: (products: Product[]) => void;
   onUpdateSettings: (settings: StoreSettings) => void;
   onViewInvoice: (invoice: Invoice) => void;
   onDeleteInvoice?: (invoiceId: string) => void;
@@ -43,6 +49,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onAddProduct,
   onUpdateProduct,
   onDeleteProduct,
+  onResetProducts,
+  onImportProducts,
   onUpdateSettings,
   onViewInvoice,
   onDeleteInvoice,
@@ -237,6 +245,59 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         }
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  // Export Product Catalog as JSON Backup
+  const handleExportJSON = () => {
+    try {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `khurshid_store_products_${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast("Product catalog JSON backup exported ✓");
+    } catch (e) {
+      alert("Error exporting JSON backup");
+    }
+  };
+
+  // Import Product Catalog from JSON
+  const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if (confirm(`Aapke JSON file me ${parsed.length} products mile. Kya aap inko live store catalog me import karna chahte hain?`)) {
+            onImportProducts ? onImportProducts(parsed) : parsed.forEach(p => onAddProduct(p));
+            showToast(`Successfully imported ${parsed.length} products ✓`);
+          }
+        } else {
+          alert('Invalid JSON file format. Products array nahi mila.');
+        }
+      } catch (err) {
+        alert('Error parsing JSON file. Kripya valid JSON file upload karein.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  // Reset to Factory Default Catalog
+  const handleResetCatalog = () => {
+    if (confirm('Kya aap sach me sabhi products ko factory default (24 initial products) par reset karna chahte hain?')) {
+      if (onResetProducts) {
+        onResetProducts();
+      } else {
+        localStorage.removeItem('khurshid_products');
+        window.location.reload();
+      }
+      showToast('Store catalog reset to default 24 products ✓');
     }
   };
 
@@ -627,6 +688,42 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </button>
                   </div>
 
+                  {/* Catalog Backup, Import, Reset & Real-Time Sync Info Bar */}
+                  <div className="pt-2 border-t border-dashed border-[#DCD0B4] flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#2B4430] bg-[#F1EAD9]/60 px-2.5 py-1 rounded-[4px_8px_4px_8px] border border-[#241F18]/30">
+                      <Radio className="w-3 h-3 text-emerald-600 animate-pulse shrink-0" />
+                      <span><strong>Real-time Sync Active:</strong> Changes sync live across all open store tabs.</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={handleExportJSON}
+                        className="inline-flex items-center gap-1 bg-white hover:bg-[#F1EAD9] text-slate-800 px-2.5 py-1 rounded border border-[#241F18] font-bold text-xs shadow-2xs cursor-pointer"
+                        title="Download JSON file backup of all products"
+                      >
+                        <Download className="w-3.5 h-3.5 text-blue-700" />
+                        <span>Export JSON</span>
+                      </button>
+
+                      <label className="inline-flex items-center gap-1 bg-white hover:bg-[#F1EAD9] text-slate-800 px-2.5 py-1 rounded border border-[#241F18] font-bold text-xs shadow-2xs cursor-pointer">
+                        <Upload className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>Import JSON</span>
+                        <input type="file" accept=".json,application/json" onChange={handleImportJSON} className="hidden" />
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={handleResetCatalog}
+                        className="inline-flex items-center gap-1 bg-white hover:bg-rose-50 text-rose-700 px-2.5 py-1 rounded border border-rose-300 font-bold text-xs shadow-2xs cursor-pointer"
+                        title="Reset products to default factory catalog (24 items)"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Reset Default</span>
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
 
                 {/* Products Table Card */}
@@ -670,10 +767,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <tbody className="divide-y divide-dashed divide-[#DCD0B4]">
                         {filteredProducts.length === 0 ? (
                           <tr>
-                            <td colSpan={8} className="py-8 text-center text-[#6B6152] font-hand text-sm">
-                              {stockFilter === 'low_stock' 
-                                ? `Shandaar! Koi bhi item low stock (< ${lowStockThreshold}) nahi hai.` 
-                                : 'Koi product nahi mila. "+ Add Product" button se naya item jodein.'}
+                            <td colSpan={8} className="py-10 text-center text-[#6B6152] font-hand text-sm">
+                              <div className="space-y-2.5">
+                                <div className="text-3xl">📦</div>
+                                <div className="font-bold text-[#152A1C] text-sm sm:text-base">
+                                  {stockFilter === 'low_stock' 
+                                    ? `Shandaar! Koi bhi item low stock (< ${lowStockThreshold}) nahi hai.` 
+                                    : 'Abhi inventory me koi product add nahi hai.'}
+                                </div>
+                                <p className="text-xs text-[#6B6152] max-w-sm mx-auto">
+                                  Naya product (नाम, दाम, फोटो, स्टॉक) add karne ke liye niche button par click karein.
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={handleOpenAdd}
+                                  className="mt-1 inline-flex items-center gap-1.5 bg-[#C68A2E] text-[#241F18] px-4 py-2 rounded-[4px_10px_4px_10px] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#b57d25] transition-all cursor-pointer"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                  <span>+ Add Your First Product</span>
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ) : (

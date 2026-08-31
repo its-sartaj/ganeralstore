@@ -21,11 +21,19 @@ import { Footer } from './components/Footer';
 export default function App() {
   // 1. Persistent State Initialization
   const [products, setProducts] = useState<Product[]>(() => {
+    // Check if store was cleared for manual product entry
+    const isCleaned = localStorage.getItem('khurshid_clean_catalog_v2');
+    if (!isCleaned) {
+      localStorage.setItem('khurshid_clean_catalog_v2', 'true');
+      localStorage.removeItem('khurshid_products');
+      localStorage.removeItem('khurshid_cart');
+      return [];
+    }
     const saved = localStorage.getItem('khurshid_products');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       } catch (e) {
@@ -141,21 +149,101 @@ export default function App() {
     };
   }, []);
 
-  // Save to localStorage whenever critical state changes
+  // Cross-Tab Real-time Broadcast & Synchronization
+  useEffect(() => {
+    let channel: BroadcastChannel | null = null;
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        channel = new BroadcastChannel('khurshid_store_channel');
+        channel.onmessage = (event) => {
+          const { type, payload } = event.data || {};
+          if (type === 'SYNC_PRODUCTS' && Array.isArray(payload)) {
+            setProducts(payload);
+          } else if (type === 'SYNC_SETTINGS' && payload) {
+            setSettings(prev => ({ ...prev, ...payload }));
+          } else if (type === 'SYNC_INVOICES' && Array.isArray(payload)) {
+            setInvoices(payload);
+          } else if (type === 'SYNC_CART' && payload) {
+            setCart(payload);
+          }
+        };
+      }
+    } catch (e) {
+      console.warn('BroadcastChannel not available', e);
+    }
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (!e.newValue) return;
+      try {
+        if (e.key === 'khurshid_products') {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setProducts(parsed);
+        } else if (e.key === 'khurshid_settings') {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed) setSettings(prev => ({ ...prev, ...parsed }));
+        } else if (e.key === 'khurshid_invoices') {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setInvoices(parsed);
+        } else if (e.key === 'khurshid_cart') {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed) setCart(parsed);
+        }
+      } catch (err) {
+        console.error('Error syncing storage event', err);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      if (channel) channel.close();
+    };
+  }, []);
+
+  // Save to localStorage whenever critical state changes and broadcast across tabs
   useEffect(() => {
     localStorage.setItem('khurshid_products', JSON.stringify(products));
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        const ch = new BroadcastChannel('khurshid_store_channel');
+        ch.postMessage({ type: 'SYNC_PRODUCTS', payload: products });
+        ch.close();
+      }
+    } catch (e) {}
   }, [products]);
 
   useEffect(() => {
     localStorage.setItem('khurshid_settings', JSON.stringify(settings));
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        const ch = new BroadcastChannel('khurshid_store_channel');
+        ch.postMessage({ type: 'SYNC_SETTINGS', payload: settings });
+        ch.close();
+      }
+    } catch (e) {}
   }, [settings]);
 
   useEffect(() => {
     localStorage.setItem('khurshid_invoices', JSON.stringify(invoices));
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        const ch = new BroadcastChannel('khurshid_store_channel');
+        ch.postMessage({ type: 'SYNC_INVOICES', payload: invoices });
+        ch.close();
+      }
+    } catch (e) {}
   }, [invoices]);
 
   useEffect(() => {
     localStorage.setItem('khurshid_cart', JSON.stringify(cart));
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        const ch = new BroadcastChannel('khurshid_store_channel');
+        ch.postMessage({ type: 'SYNC_CART', payload: cart });
+        ch.close();
+      }
+    } catch (e) {}
   }, [cart]);
 
   // Convert cart map to full CartItem array
@@ -454,7 +542,25 @@ export default function App() {
         </div>
 
         {/* Product Cards Grid */}
-        {filteredProducts.length === 0 ? (
+        {products.length === 0 ? (
+          <div className="bg-white rounded-[6px_20px_6px_20px] p-8 sm:p-12 text-center border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.1)] space-y-3">
+            <div className="w-16 h-16 rounded-full bg-[#F1EAD9] border border-[#241F18] flex items-center justify-center mx-auto text-3xl">
+              🛒
+            </div>
+            <h3 className="font-display font-bold text-lg sm:text-xl text-[#152A1C]">
+              Store me abhi koi product add nahi hai
+            </h3>
+            <p className="text-xs sm:text-sm text-[#6B6152] max-w-md mx-auto font-medium">
+              Sabhi purane dummy products remove kar diye gaye hain. Aap Admin Panel khol kar apne pasand ke naye products (+ Add Product) manually add kar sakte hain.
+            </p>
+            <button
+              onClick={() => { setIsAdminOpen(true); window.location.hash = 'admin'; }}
+              className="mt-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-[4px_12px_4px_12px] bg-[#2B4430] text-[#F1EAD9] text-xs sm:text-sm font-bold border-[1.5px] border-[#241F18] shadow-[3px_3px_0_#241F18] hover:bg-[#152A1C] transition-all cursor-pointer"
+            >
+              <span>+ Add Products in Admin (सामान जोड़ें)</span>
+            </button>
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="bg-white rounded-[6px_20px_6px_20px] p-8 sm:p-12 text-center border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.1)] space-y-3">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#F1EAD9] border border-[#241F18] flex items-center justify-center mx-auto text-2xl">
               🔍
@@ -674,6 +780,8 @@ export default function App() {
         onAddProduct={handleAddProduct}
         onUpdateProduct={handleUpdateProduct}
         onDeleteProduct={handleDeleteProduct}
+        onResetProducts={() => setProducts(INITIAL_PRODUCTS)}
+        onImportProducts={(importedList) => setProducts(importedList)}
         onUpdateSettings={setSettings}
         onViewInvoice={handleViewInvoice}
         onDeleteInvoice={handleDeleteInvoice}
