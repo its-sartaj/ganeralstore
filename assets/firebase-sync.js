@@ -50,7 +50,6 @@
     } catch (e) {
       console.warn('[CloudSync] Quota warning on ' + key + ', attempting cleanup...', e);
       try {
-        // If quota exceeded, clean up old non-critical caches
         localStorage.removeItem('khurshid_clean_catalog_v2');
         localStorage.setItem(key, value);
         return true;
@@ -79,7 +78,6 @@
         });
         window.dispatchEvent(storageEvent);
       } catch (e) {
-        // Fallback for older browsers
         try {
           const evt = document.createEvent('StorageEvent');
           if (evt.initStorageEvent) {
@@ -105,31 +103,52 @@
     }
   }
 
-  // Normalize data retrieved from Cloud (handles wrappers, arrays, objects)
-  function normalizeCloudData(cloudData, isArray) {
+  // Normalize data retrieved from Cloud (handles wrappers, maps, arrays, filters corrupt items)
+  function normalizeCloudData(cloudData, isArray, remoteName) {
     if (cloudData === null || cloudData === undefined) {
       return isArray ? [] : null;
     }
 
-    // Wrapped structure: { list: [...], updatedAt: 12345 } or { data: ..., updatedAt: ... }
-    let raw = cloudData;
-    if (cloudData && typeof cloudData === 'object' && ('list' in cloudData || 'data' in cloudData)) {
-      raw = cloudData.list !== undefined ? cloudData.list : cloudData.data;
-      if (raw === null || raw === undefined) {
-        return isArray ? [] : {};
-      }
-    }
-
     if (isArray) {
+      let raw = cloudData;
+
+      // Handle wrapped structure: { list: [...], ... } or { items: {...}, ... }
+      if (cloudData && typeof cloudData === 'object') {
+        if ('list' in cloudData) {
+          raw = cloudData.list;
+        } else if ('items' in cloudData) {
+          raw = cloudData.items;
+        } else if ('updatedAt' in cloudData && !('name' in cloudData) && !('id' in cloudData)) {
+          // Wrapped object where empty list was omitted by Firebase
+          return [];
+        }
+      }
+
+      if (raw === null || raw === undefined) return [];
+
+      let arr = [];
       if (Array.isArray(raw)) {
-        return raw;
+        arr = raw;
+      } else if (raw && typeof raw === 'object') {
+        arr = Object.values(raw);
       }
-      if (raw && typeof raw === 'object') {
-        return Object.values(raw);
-      }
-      return [];
+
+      // Filter corrupt entries (e.g. bare timestamps, numbers, or objects without valid id)
+      return arr.filter(function(item) {
+        if (!item || typeof item !== 'object') return false;
+        if (!item.id) return false;
+        if (remoteName === 'products') {
+          return typeof item.name === 'string' && item.name.trim().length > 0;
+        }
+        return true;
+      });
     }
 
+    // Settings object
+    let raw = cloudData;
+    if (cloudData && typeof cloudData === 'object' && 'data' in cloudData) {
+      raw = cloudData.data;
+    }
     return raw && typeof raw === 'object' ? raw : {};
   }
 
@@ -145,12 +164,25 @@
     });
   }
 
-  // Write to Firebase REST API with wrapper to protect empty arrays from being converted to null
+  // Write to Firebase REST API with wrapper
   function writeToCloud(remotePath, data, isArray) {
     const url = DATABASE_URL + STORE_PATH + '/' + remotePath + '.json';
-    const payload = isArray 
-      ? { list: Array.isArray(data) ? data : [], updatedAt: Date.now() }
-      : { data: data, updatedAt: Date.now() };
+    let payload;
+    if (isArray) {
+      const cleanArray = Array.isArray(data) ? data.filter(function(x) {
+        return x && typeof x === 'object' && x.id;
+      }) : [];
+      payload = {
+        list: cleanArray,
+        count: cleanArray.length,
+        updatedAt: Date.now()
+      };
+    } else {
+      payload = {
+        data: data && typeof data === 'object' ? data : {},
+        updatedAt: Date.now()
+      };
+    }
 
     return fetch(url, {
       method: 'PUT',
@@ -187,7 +219,7 @@
             }
           } else {
             // Cloud is initialized -> Cloud is the single source of truth
-            const normalized = normalizeCloudData(cloudData, item.isArray);
+            const normalized = normalizeCloudData(cloudData, item.isArray, item.remote);
             const json = JSON.stringify(normalized);
             _lastHashes[item.remote] = simpleHash(json);
             writeToLocalAndNotify(item.local, normalized, item.broadcast);
@@ -201,6 +233,7 @@
 
     Promise.all(promises).then(function() {
       _initialSyncCompleted = true;
+      showStatusIndicator(true);
       console.log('[CloudSync] ✅ Initial sync complete');
     });
   }
@@ -212,7 +245,7 @@
         .then(function(cloudData) {
           if (cloudData === null || cloudData === undefined) return;
 
-          const normalized = normalizeCloudData(cloudData, item.isArray);
+          const normalized = normalizeCloudData(cloudData, item.isArray, item.remote);
           const json = JSON.stringify(normalized);
           const hash = simpleHash(json);
 
@@ -234,7 +267,13 @@
   localStorage.setItem = function(key, value) {
     _origSetItem(key, value);
 
+    // 1. Never sync to cloud if suppressed during local notification
     if (_suppressCloudWrite) return;
+
+    // 2. CRITICAL RACE CONDITION PROTECTION: Never upload to cloud before initial cloud sync has completed!
+    if (!_initialSyncCompleted) {
+      return;
+    }
 
     let target = null;
     for (let i = 0; i < SYNC_CONFIG.length; i++) {
@@ -288,27 +327,14 @@
     }
   }
 
-  // Initialize and attach listeners
-  fetch(DATABASE_URL + '/.json', { method: 'GET' })
-    .then(function(res) {
-      if (res.ok) {
-        showStatusIndicator(true);
-        console.log('[CloudSync] 🚀 Cloud database connected');
-        initialSync();
-        setInterval(pollForUpdates, POLL_INTERVAL);
+  // Initialize immediately
+  initialSync();
+  setInterval(pollForUpdates, POLL_INTERVAL);
 
-        // Instant refresh when user returns to website tab or focuses screen
-        window.addEventListener('visibilitychange', function() {
-          if (!document.hidden) pollForUpdates();
-        });
-        window.addEventListener('focus', pollForUpdates);
-      } else {
-        throw new Error('HTTP ' + res.status);
-      }
-    })
-    .catch(function(err) {
-      showStatusIndicator(false);
-      console.warn('[CloudSync] Cloud sync offline:', err.message);
-    });
+  // Instant refresh when user returns to website tab or focuses screen
+  window.addEventListener('visibilitychange', function() {
+    if (!document.hidden) pollForUpdates();
+  });
+  window.addEventListener('focus', pollForUpdates);
 
 })();

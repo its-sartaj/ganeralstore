@@ -9,4 +9,5 @@ coverage/
 *.tgz
 .env*
 .system_generated/
+its_sartaj/
 
