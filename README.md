@@ -29,8 +29,7 @@ Access the live store here:
 - **Dynamic UPI QR Code**: Scan & Pay with Google Pay, PhonePe, Paytm, or BHIM.
 - **Counter POS Terminal**: Rapid counter billing for walk-in store customers with live inventory deduction.
 
-### ⚙️ Store Management & Admin Dashboard
-- **Admin Access Protection**: Secured with configurable store PIN (Default: `kgs2026`).
+### ⚙️ Store Management & Admin Dashboard)
 - **Low-Stock Alert Badging**: Real-time badge indicators for items running below threshold (`< 2 units`) and out-of-stock items.
 - **Product Inventory CRUD**: Add, edit, delete, and restock products with image uploads or online image links.
 - **Store Settings Customizer**: Configure store name, tagline, delivery radius, delivery fee, helpline numbers, UPI ID, and Google Maps URL.
