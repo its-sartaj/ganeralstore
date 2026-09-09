@@ -11,7 +11,7 @@
   // 1. Database Configuration
   const DATABASE_URL = 'https://khurshid-store-481f4-default-rtdb.asia-southeast1.firebasedatabase.app';
   const STORE_PATH = '/khurshid_store';
-  const POLL_INTERVAL = 5000; // Poll every 5 seconds for real-time customer updates
+  const POLL_INTERVAL = 4000; // Poll every 4 seconds for instant live updates
 
   const SYNC_CONFIG = [
     { local: 'khurshid_products', remote: 'products', broadcast: 'SYNC_PRODUCTS', isArray: true },
@@ -42,12 +42,31 @@
     return hash.toString(36);
   }
 
+  // Safe localStorage write that handles QuotaExceededError
+  function safeLocalStorageSet(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (e) {
+      console.warn('[CloudSync] Quota warning on ' + key + ', attempting cleanup...', e);
+      try {
+        // If quota exceeded, clean up old non-critical caches
+        localStorage.removeItem('khurshid_clean_catalog_v2');
+        localStorage.setItem(key, value);
+        return true;
+      } catch (err) {
+        console.error('[CloudSync] localStorage write failed permanently', err);
+        return false;
+      }
+    }
+  }
+
   // Write to localStorage & trigger React state updates in ALL tabs & current window
   function writeToLocalAndNotify(storageKey, data, broadcastType) {
     try {
       const json = JSON.stringify(data);
       _suppressCloudWrite = true;
-      localStorage.setItem(storageKey, json);
+      safeLocalStorageSet(storageKey, json);
 
       // 1. Dispatch custom StorageEvent for current window's React listener
       try {
@@ -86,6 +105,34 @@
     }
   }
 
+  // Normalize data retrieved from Cloud (handles wrappers, arrays, objects)
+  function normalizeCloudData(cloudData, isArray) {
+    if (cloudData === null || cloudData === undefined) {
+      return isArray ? [] : null;
+    }
+
+    // Wrapped structure: { list: [...], updatedAt: 12345 } or { data: ..., updatedAt: ... }
+    let raw = cloudData;
+    if (cloudData && typeof cloudData === 'object' && ('list' in cloudData || 'data' in cloudData)) {
+      raw = cloudData.list !== undefined ? cloudData.list : cloudData.data;
+      if (raw === null || raw === undefined) {
+        return isArray ? [] : {};
+      }
+    }
+
+    if (isArray) {
+      if (Array.isArray(raw)) {
+        return raw;
+      }
+      if (raw && typeof raw === 'object') {
+        return Object.values(raw);
+      }
+      return [];
+    }
+
+    return raw && typeof raw === 'object' ? raw : {};
+  }
+
   // Fetch from Firebase REST API
   function fetchFromCloud(remotePath) {
     const url = DATABASE_URL + STORE_PATH + '/' + remotePath + '.json?t=' + Date.now();
@@ -98,13 +145,17 @@
     });
   }
 
-  // Write to Firebase REST API
-  function writeToCloud(remotePath, data) {
+  // Write to Firebase REST API with wrapper to protect empty arrays from being converted to null
+  function writeToCloud(remotePath, data, isArray) {
     const url = DATABASE_URL + STORE_PATH + '/' + remotePath + '.json';
+    const payload = isArray 
+      ? { list: Array.isArray(data) ? data : [], updatedAt: Date.now() }
+      : { data: data, updatedAt: Date.now() };
+
     return fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     }).then(function(res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
@@ -117,15 +168,17 @@
       return fetchFromCloud(item.remote)
         .then(function(cloudData) {
           if (cloudData === null || cloudData === undefined) {
-            // Cloud is completely empty: check if local has existing data to seed cloud
+            // Cloud has never been initialized: seed from local storage if available
             const localRaw = localStorage.getItem(item.local);
             if (localRaw) {
               try {
                 const localData = JSON.parse(localRaw);
-                // Only seed if not empty array/object
-                const hasContent = Array.isArray(localData) ? localData.length > 0 : (localData && Object.keys(localData).length > 0);
+                const hasContent = item.isArray 
+                  ? (Array.isArray(localData) && localData.length > 0)
+                  : (localData && Object.keys(localData).length > 0);
+
                 if (hasContent) {
-                  return writeToCloud(item.remote, localData).then(function() {
+                  return writeToCloud(item.remote, localData, item.isArray).then(function() {
                     console.log('[CloudSync] ☁️ Seeded ' + item.remote + ' to cloud');
                     _lastHashes[item.remote] = simpleHash(localRaw);
                   });
@@ -133,15 +186,12 @@
               } catch (e) {}
             }
           } else {
-            // Cloud has data -> Cloud is source of truth
-            let normalized = cloudData;
-            if (item.isArray && !Array.isArray(cloudData)) {
-              normalized = Object.values(cloudData);
-            }
+            // Cloud is initialized -> Cloud is the single source of truth
+            const normalized = normalizeCloudData(cloudData, item.isArray);
             const json = JSON.stringify(normalized);
             _lastHashes[item.remote] = simpleHash(json);
             writeToLocalAndNotify(item.local, normalized, item.broadcast);
-            console.log('[CloudSync] 📥 Loaded ' + item.remote + ' from cloud');
+            console.log('[CloudSync] 📥 Loaded ' + item.remote + ' from cloud (' + (item.isArray ? normalized.length + ' items' : 'settings') + ')');
           }
         })
         .catch(function(err) {
@@ -162,11 +212,7 @@
         .then(function(cloudData) {
           if (cloudData === null || cloudData === undefined) return;
 
-          let normalized = cloudData;
-          if (item.isArray && !Array.isArray(cloudData)) {
-            normalized = Object.values(cloudData);
-          }
-
+          const normalized = normalizeCloudData(cloudData, item.isArray);
           const json = JSON.stringify(normalized);
           const hash = simpleHash(json);
 
@@ -178,7 +224,7 @@
           }
         })
         .catch(function() {
-          // Network errors silently ignored during background polling
+          // Silent fail during background polling
         });
     });
   }
@@ -205,7 +251,7 @@
 
       if (_lastHashes[target.remote] !== hash) {
         _lastHashes[target.remote] = hash;
-        writeToCloud(target.remote, data)
+        writeToCloud(target.remote, data, target.isArray)
           .then(function() {
             console.log('[CloudSync] ☁️ Uploaded ' + target.remote + ' to cloud');
           })

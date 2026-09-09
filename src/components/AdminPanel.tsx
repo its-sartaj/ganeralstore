@@ -17,10 +17,11 @@ import {
   Download,
   RotateCcw,
   RefreshCw,
-  Radio
+  Radio,
+  Sparkles
 } from 'lucide-react';
 import { Product, StoreSettings, Invoice, CartItem } from '../types';
-import { INITIAL_CATEGORIES, INITIAL_PRODUCTS } from '../data/initialProducts';
+import { INITIAL_CATEGORIES, INITIAL_PRODUCTS, STARTER_GROCERY_PRODUCTS } from '../data/initialProducts';
 import { formatCurrency, cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
 
 interface AdminPanelProps {
@@ -63,13 +64,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [passwordInput, setPasswordInput] = useState('');
   const [loginError, setLoginError] = useState(false);
 
-  // Tabs
+  // Tabs ('products' | 'pos' | 'invoices' | 'settings')
   const [activeTab, setActiveTab] = useState<'products' | 'pos' | 'invoices' | 'settings'>('products');
 
   // Stock filter in products table ('all' | 'low_stock' | 'out_of_stock')
   const [stockFilter, setStockFilter] = useState<'all' | 'low_stock' | 'out_of_stock'>('all');
 
-  // Search in products table
+  // Search & Category in products table
   const [adminSearch, setAdminSearch] = useState('');
   const [selectedAdminCat, setSelectedAdminCat] = useState('All');
 
@@ -85,7 +86,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const [productForm, setProductForm] = useState({
+  // Form state supporting string inputs during typing
+  const [productForm, setProductForm] = useState<{
+    name: string;
+    hindiName: string;
+    category: string;
+    unit: string;
+    mrp: string | number;
+    price: string | number;
+    stock: string | number;
+    image: string;
+    description: string;
+    badge: string;
+  }>({
     name: '',
     hindiName: '',
     category: '🌾 Staples & Atta',
@@ -120,8 +133,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Handle Login
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const correctPin = settings.adminPin || 'kgs2026';
-    if (passwordInput === correctPin || (correctPin === 'kgs2026' && passwordInput === '1234')) {
+    const entered = (passwordInput || '').trim();
+    const correctPin = (settings.adminPin || 'kgs2026').trim();
+    if (entered === correctPin || (correctPin === 'kgs2026' && entered === '1234')) {
       setIsAuthenticated(true);
       setLoginError(false);
       setPasswordInput('');
@@ -144,9 +158,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       hindiName: '',
       category: '🌾 Staples & Atta',
       unit: '1 kg Pack',
-      mrp: 100,
-      price: 90,
-      stock: 50,
+      mrp: '',
+      price: '',
+      stock: '50',
       image: '',
       description: '',
       badge: 'Fresh Stock'
@@ -180,9 +194,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       return;
     }
 
-    const safeMrp = Math.max(0, Number(productForm.mrp) || 0);
-    const safePrice = Math.max(0, Number(productForm.price) || 0);
-    const safeStock = Math.max(0, Math.floor(Number(productForm.stock) || 0));
+    const safeMrp = Math.max(0, parseFloat(String(productForm.mrp)) || 0);
+    const safePrice = Math.max(0, parseFloat(String(productForm.price)) || 0);
+    const safeStock = Math.max(0, Math.floor(parseFloat(String(productForm.stock)) || 0));
     const safeImage = sanitizeUrl(productForm.image, 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80');
 
     if (editingProduct) {
@@ -192,7 +206,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         hindiName: productForm.hindiName.trim(),
         category: productForm.category,
         unit: productForm.unit.trim() || '1 Pack',
-        mrp: safeMrp,
+        mrp: safeMrp || safePrice,
         price: safePrice,
         stock: safeStock,
         image: safeImage,
@@ -207,7 +221,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         hindiName: productForm.hindiName.trim(),
         category: productForm.category,
         unit: productForm.unit.trim() || '1 Pack',
-        mrp: safeMrp,
+        mrp: safeMrp || safePrice,
         price: safePrice,
         stock: safeStock,
         image: safeImage,
@@ -223,25 +237,55 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setIsProductModalOpen(false);
   };
 
-  // Image Upload handler (Base64 file reading with security bounds)
+  // Image Upload handler with auto-compression for high reliability
   const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Kripya keval image file (JPG, PNG, WebP) upload karein.');
+        alert('Kripya image file (JPG, PNG, WebP) upload karein.');
         return;
       }
-      // Validate file size limit (Max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        alert('Image size 2 MB se kam honi chahiye.');
+      if (file.size > 4 * 1024 * 1024) {
+        alert('Image size 4 MB se kam honi chahiye.');
         return;
       }
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
-          setProductForm(prev => ({ ...prev, image: reader.result as string }));
-          showToast('Product photo uploaded ✓');
+          // Compress large images via canvas to preserve localStorage quota
+          const img = new Image();
+          img.src = reader.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 400;
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+              if (width > MAX_SIZE) {
+                height = Math.round((height * MAX_SIZE) / width);
+                width = MAX_SIZE;
+              }
+            } else {
+              if (height > MAX_SIZE) {
+                width = Math.round((width * MAX_SIZE) / height);
+                height = MAX_SIZE;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+              setProductForm(prev => ({ ...prev, image: compressedDataUrl }));
+              showToast('Product photo uploaded & optimized ✓');
+            } else {
+              setProductForm(prev => ({ ...prev, image: reader.result as string }));
+            }
+          };
+          img.onerror = () => {
+            setProductForm(prev => ({ ...prev, image: reader.result as string }));
+          };
         }
       };
       reader.readAsDataURL(file);
@@ -274,7 +318,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         const parsed = JSON.parse(event.target?.result as string);
         if (Array.isArray(parsed) && parsed.length > 0) {
           if (confirm(`Aapke JSON file me ${parsed.length} products mile. Kya aap inko live store catalog me import karna chahte hain?`)) {
-            onImportProducts ? onImportProducts(parsed) : parsed.forEach(p => onAddProduct(p));
+            if (onImportProducts) {
+              onImportProducts(parsed);
+            } else {
+              parsed.forEach(p => onAddProduct(p));
+            }
             showToast(`Successfully imported ${parsed.length} products ✓`);
           }
         } else {
@@ -288,16 +336,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     e.target.value = '';
   };
 
-  // Reset to Factory Default Catalog
-  const handleResetCatalog = () => {
-    if (confirm('Kya aap sach me sabhi products ko factory default (24 initial products) par reset karna chahte hain?')) {
-      if (onResetProducts) {
-        onResetProducts();
+  // Clear All Products from Catalog
+  const handleClearCatalog = () => {
+    if (confirm('Kya aap sach me sabhi products ko delete karke catalog empty karna chahte hain?')) {
+      if (onImportProducts) {
+        onImportProducts([]);
       } else {
-        localStorage.removeItem('khurshid_products');
-        window.location.reload();
+        products.forEach(p => onDeleteProduct(p.id));
       }
-      showToast('Store catalog reset to default 24 products ✓');
+      setPosCart({});
+      showToast('Catalog clear ho gaya (All products removed) ✓');
+    }
+  };
+
+  // Load Starter Grocery Items (8 popular items)
+  const handleLoadStarterCatalog = () => {
+    if (confirm(`Kya aap ${STARTER_GROCERY_PRODUCTS.length} popular starter kirana products (Atta, Rice, Oil, Ghee, Dal, Chai, etc.) catalog me add karna chahte hain?`)) {
+      if (onImportProducts) {
+        onImportProducts(STARTER_GROCERY_PRODUCTS);
+      } else {
+        STARTER_GROCERY_PRODUCTS.forEach(p => onAddProduct(p));
+      }
+      showToast(`${STARTER_GROCERY_PRODUCTS.length} Starter products loaded ✓`);
     }
   };
 
@@ -351,10 +411,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Filtered products in admin
   const filteredProducts = products.filter(p => {
     const matchCat = selectedAdminCat === 'All' || p.category === selectedAdminCat;
-    const matchSearch = adminSearch.trim() === '' || 
-      p.name.toLowerCase().includes(adminSearch.toLowerCase()) ||
-      (p.hindiName && p.hindiName.toLowerCase().includes(adminSearch.toLowerCase())) ||
-      p.category.toLowerCase().includes(adminSearch.toLowerCase());
+    const searchLower = adminSearch.trim().toLowerCase();
+    const matchSearch = searchLower === '' || 
+      p.name.toLowerCase().includes(searchLower) ||
+      (p.hindiName && p.hindiName.toLowerCase().includes(searchLower)) ||
+      p.category.toLowerCase().includes(searchLower) ||
+      (p.unit && p.unit.toLowerCase().includes(searchLower)) ||
+      (p.description && p.description.toLowerCase().includes(searchLower));
     
     let matchStock = true;
     if (stockFilter === 'low_stock') {
@@ -429,7 +492,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full bg-white text-[#6B6152] hover:text-[#241F18] py-2 text-xs font-bold border-[1.5px] border-dashed border-[#6B6152] rounded-[4px_10px_4px_10px]"
+                className="w-full bg-white text-[#6B6152] hover:text-[#241F18] py-2 text-xs font-bold border-[1.5px] border-dashed border-[#6B6152] rounded-[4px_10px_4px_10px] cursor-pointer"
               >
                 ← Return to Public Store
               </button>
@@ -446,25 +509,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="flex-1 flex flex-col min-h-screen">
           
           {/* Admin Header */}
-          <header className="bg-[#152A1C] text-white px-4 sm:px-6 py-3 border-b-[1.5px] border-[#241F18] flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-[3px_9px_3px_9px] bg-white text-[#2B4430] flex items-center justify-center font-bold border border-[#241F18]">
-                <Store className="w-5 h-5" />
+          <header className="bg-[#152A1C] text-white px-3 sm:px-6 py-3 border-b-[1.5px] border-[#241F18] flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-[3px_9px_3px_9px] bg-white text-[#2B4430] flex items-center justify-center font-bold border border-[#241F18] shrink-0">
+                <Store className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <h1 className="font-display text-base sm:text-lg font-bold leading-tight">
-                  {settings.storeName} — Admin Portal
+              <div className="min-w-0">
+                <h1 className="font-display text-sm sm:text-lg font-bold leading-tight truncate">
+                  {settings.storeName} — Admin
                 </h1>
-                <span className="font-hand text-xs text-[#C68A2E]">
-                  Inventory, POS Billing & Store Controls
+                <span className="font-hand text-[10px] sm:text-xs text-[#C68A2E] truncate block">
+                  Live Cloud Inventory & Store Controls
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={onClose}
-                className="inline-flex items-center gap-1.5 bg-[#2B4430] hover:bg-[#38593f] text-[#DCE6DF] px-3 py-1.5 rounded-[4px_10px_4px_10px] text-xs font-bold border border-[#DCE6DF]/20 cursor-pointer"
+                className="inline-flex items-center gap-1 bg-[#2B4430] hover:bg-[#38593f] text-[#DCE6DF] px-2.5 sm:px-3 py-1.5 rounded-[4px_10px_4px_10px] text-xs font-bold border border-[#DCE6DF]/20 cursor-pointer"
                 title="View Customer Storefront"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -473,7 +536,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center gap-1.5 bg-[#B14B2C] hover:bg-[#973e23] text-white px-3 py-1.5 rounded-[4px_10px_4px_10px] text-xs font-bold border border-[#241F18] cursor-pointer"
+                className="inline-flex items-center gap-1 bg-[#B14B2C] hover:bg-[#973e23] text-white px-2.5 sm:px-3 py-1.5 rounded-[4px_10px_4px_10px] text-xs font-bold border border-[#241F18] cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Logout</span>
@@ -535,7 +598,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
 
           {/* Admin Main Body */}
-          <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full">
+          <main className="flex-1 max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 w-full">
             
             {/* TAB 1: PRODUCTS INVENTORY */}
             {activeTab === 'products' && (
@@ -543,7 +606,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 
                 {/* Low Stock Alert Notification Banner */}
                 {lowStockProducts.length > 0 && (
-                  <div className="bg-rose-50 border-[1.5px] border-rose-600 rounded-[4px_16px_4px_16px] p-4 shadow-[3px_3px_0_#e11d48] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="bg-rose-50 border-[1.5px] border-rose-600 rounded-[4px_16px_4px_16px] p-3.5 sm:p-4 shadow-[3px_3px_0_#e11d48] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-start gap-3">
                       <div className="w-9 h-9 rounded-[4px_10px_4px_10px] bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs mt-0.5">
                         <AlertTriangle className="w-5 h-5 animate-bounce" />
@@ -553,15 +616,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           <h4 className="font-display font-bold text-sm sm:text-base text-rose-950">
                             Low-Stock Alert: {lowStockProducts.length} items require restock!
                           </h4>
-                          <span className="bg-rose-200 text-rose-900 border border-rose-300 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full">
-                            Alert Threshold: Stock &lt; {lowStockThreshold} units
+                          <span className="bg-rose-200 text-rose-900 border border-rose-300 text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 rounded-full">
+                            Threshold: Stock &lt; {lowStockThreshold} units
                           </span>
                         </div>
                         <p className="font-hand text-xs text-rose-800 mt-0.5">
                           {outOfStockProducts.length > 0 && <span className="font-bold text-rose-900">{outOfStockProducts.length} out of stock (0)</span>}
                           {outOfStockProducts.length > 0 && lowStockOnlyCount > 0 && <span> and </span>}
                           {lowStockOnlyCount > 0 && <span>{lowStockOnlyCount} critically low items</span>}
-                          . Below in the inventory table, these items are highlighted in red with quick restock buttons.
+                          . Below in the table, click <strong>+10</strong> for instant 1-click restock.
                         </p>
                       </div>
                     </div>
@@ -583,7 +646,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 )}
 
                 {/* Search & Filter & Threshold Toolbar Controls */}
-                <div className="bg-white p-4 rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[3px_3px_0_rgba(36,31,24,0.1)] flex flex-col gap-3">
+                <div className="bg-white p-3.5 sm:p-4 rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[3px_3px_0_rgba(36,31,24,0.1)] flex flex-col gap-3">
                   
                   <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
                     {/* Search */}
@@ -593,7 +656,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         type="text"
                         value={adminSearch}
                         onChange={(e) => setAdminSearch(e.target.value)}
-                        placeholder="Search inventory items by name, Hindi name, category..."
+                        placeholder="Search inventory by name, Hindi name, category, pack size..."
                         className="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-[#F1EAD9] border-[1.5px] border-[#241F18] rounded-[4px_10px_4px_10px]"
                       />
                     </div>
@@ -692,15 +755,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <div className="pt-2 border-t border-dashed border-[#DCD0B4] flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#2B4430] bg-[#F1EAD9]/60 px-2.5 py-1 rounded-[4px_8px_4px_8px] border border-[#241F18]/30">
                       <Radio className="w-3 h-3 text-emerald-600 animate-pulse shrink-0" />
-                      <span><strong>Real-time Sync Active:</strong> Changes sync live across all open store tabs.</span>
+                      <span><strong>Cloud Real-Time Sync:</strong> Active & Live across all devices.</span>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
                       <button
                         type="button"
+                        onClick={handleLoadStarterCatalog}
+                        className="inline-flex items-center gap-1 bg-amber-50 hover:bg-amber-100 text-amber-900 px-2.5 py-1 rounded border border-amber-300 font-bold text-xs shadow-2xs cursor-pointer"
+                        title="Load 8 popular starter grocery items"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                        <span>Load Starter Items ({STARTER_GROCERY_PRODUCTS.length})</span>
+                      </button>
+
+                      <button
+                        type="button"
                         onClick={handleExportJSON}
                         className="inline-flex items-center gap-1 bg-white hover:bg-[#F1EAD9] text-slate-800 px-2.5 py-1 rounded border border-[#241F18] font-bold text-xs shadow-2xs cursor-pointer"
-                        title="Download JSON file backup of all products"
+                        title="Download JSON backup of all products"
                       >
                         <Download className="w-3.5 h-3.5 text-blue-700" />
                         <span>Export JSON</span>
@@ -714,12 +787,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                       <button
                         type="button"
-                        onClick={handleResetCatalog}
+                        onClick={handleClearCatalog}
                         className="inline-flex items-center gap-1 bg-white hover:bg-rose-50 text-rose-700 px-2.5 py-1 rounded border border-rose-300 font-bold text-xs shadow-2xs cursor-pointer"
-                        title="Reset products to default factory catalog (24 items)"
+                        title="Delete all products from store catalog"
                       >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        <span>Reset Default</span>
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Clear All</span>
                       </button>
                     </div>
                   </div>
@@ -728,7 +801,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                 {/* Products Table Card */}
                 <div className="bg-white rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] overflow-hidden">
-                  <div className="p-4 border-b border-[#241F18] flex items-center justify-between bg-[#F1EAD9]/60 flex-wrap gap-2">
+                  <div className="p-3.5 sm:p-4 border-b border-[#241F18] flex items-center justify-between bg-[#F1EAD9]/60 flex-wrap gap-2">
                     <div>
                       <h3 className="font-display font-bold text-base text-[#152A1C] flex items-center gap-2">
                         <span>Active Catalog Items ({filteredProducts.length})</span>
@@ -776,16 +849,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     : 'Abhi inventory me koi product add nahi hai.'}
                                 </div>
                                 <p className="text-xs text-[#6B6152] max-w-sm mx-auto">
-                                  Naya product (नाम, दाम, फोटो, स्टॉक) add karne ke liye niche button par click karein.
+                                  Naya product (नाम, दाम, फोटो, स्टॉक) add karne ke liye niche button par click karein ya starter items load karein.
                                 </p>
-                                <button
-                                  type="button"
-                                  onClick={handleOpenAdd}
-                                  className="mt-1 inline-flex items-center gap-1.5 bg-[#C68A2E] text-[#241F18] px-4 py-2 rounded-[4px_10px_4px_10px] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#b57d25] transition-all cursor-pointer"
-                                >
-                                  <Plus className="w-3.5 h-3.5" />
-                                  <span>+ Add Your First Product</span>
-                                </button>
+                                <div className="flex items-center justify-center gap-2 pt-1">
+                                  <button
+                                    type="button"
+                                    onClick={handleOpenAdd}
+                                    className="inline-flex items-center gap-1.5 bg-[#C68A2E] text-[#241F18] px-4 py-2 rounded-[4px_10px_4px_10px] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#b57d25] transition-all cursor-pointer"
+                                  >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span>+ Add Product</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleLoadStarterCatalog}
+                                    className="inline-flex items-center gap-1.5 bg-white text-[#152A1C] px-3.5 py-2 rounded-[4px_10px_4px_10px] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#F1EAD9] transition-all cursor-pointer"
+                                  >
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                                    <span>Load Starter Items</span>
+                                  </button>
+                                </div>
                               </div>
                             </td>
                           </tr>
@@ -923,6 +1006,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     onClick={() => {
                                       if (confirm(`Kya aap sach me "${p.name}" ko inventory se delete karna chahte hain?`)) {
                                         onDeleteProduct(p.id);
+                                        // Also cleanup posCart
+                                        setPosCart(prev => {
+                                          const copy = { ...prev };
+                                          delete copy[p.id];
+                                          return copy;
+                                        });
                                         showToast(`Product "${p.name}" deleted`);
                                       }
                                     }}
@@ -950,7 +1039,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className="grid lg:grid-cols-12 gap-6">
                 
                 {/* Left: Product Selector Grid */}
-                <div className="lg:col-span-7 bg-white p-5 rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] space-y-4">
+                <div className="lg:col-span-7 bg-white p-4 sm:p-5 rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] space-y-4">
                   <div>
                     <h3 className="font-display font-bold text-base text-[#152A1C]">
                       Select Items for Quick POS Bill
@@ -960,65 +1049,79 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[500px] overflow-y-auto p-1">
-                    {products.map(p => {
-                      const currentQtyInPos = posCart[p.id] || 0;
-                      const isOutOfStock = p.stock <= 0;
-                      const isMaxReached = currentQtyInPos >= p.stock;
+                  {products.length === 0 ? (
+                    <div className="text-center py-12 space-y-2 border border-dashed border-[#6B6152]/40 rounded-2xl bg-[#F1EAD9]/20">
+                      <div className="text-3xl">🛒</div>
+                      <h4 className="font-bold text-sm text-[#152A1C]">Store me koi product nahi hai</h4>
+                      <p className="text-xs text-[#6B6152]">Pehle Products tab se item add karein ya starter catalog load karein.</p>
+                      <button
+                        onClick={() => setActiveTab('products')}
+                        className="bg-[#2B4430] text-[#F1EAD9] px-4 py-2 rounded-xl text-xs font-bold"
+                      >
+                        Go to Products
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[500px] overflow-y-auto p-1">
+                      {products.map(p => {
+                        const currentQtyInPos = posCart[p.id] || 0;
+                        const isOutOfStock = p.stock <= 0;
+                        const isMaxReached = currentQtyInPos >= p.stock;
 
-                      return (
-                        <div
-                          key={p.id}
-                          onClick={() => {
-                            if (isOutOfStock) {
-                              showToast(`⚠️ "${p.name}" out of stock hai!`);
-                              return;
-                            }
-                            if (isMaxReached) {
-                              showToast(`⚠️ "${p.name}" ka kewal ${p.stock} units available hai!`);
-                              return;
-                            }
-                            setPosCart(prev => ({
-                              ...prev,
-                              [p.id]: (prev[p.id] || 0) + 1
-                            }));
-                          }}
-                          className={`p-2.5 rounded-xl border border-[#241F18] transition-all flex flex-col justify-between ${
-                            isOutOfStock
-                              ? 'bg-rose-50/70 opacity-60 cursor-not-allowed'
-                              : 'bg-[#F1EAD9]/40 hover:bg-[#F1EAD9] cursor-pointer hover:scale-[1.02]'
-                          }`}
-                        >
-                          <div className="relative w-12 h-12 rounded-full bg-white border border-[#241F18] mx-auto p-1 overflow-hidden">
-                            <img 
-                              src={p.image || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"} 
-                              alt={p.name} 
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
-                              }}
-                              className="w-full h-full object-contain" 
-                            />
-                            {isOutOfStock && (
-                              <span className="absolute inset-0 bg-rose-900/60 text-white font-bold text-[9px] flex items-center justify-center">
-                                Out
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-center mt-1">
-                            <div className="font-bold text-xs text-slate-900 truncate">{p.name}</div>
-                            <div className="flex items-center justify-center gap-1">
-                              <span className="font-mono text-xs font-extrabold text-[#2B4430]">₹{p.price}</span>
-                              <span className="text-[10px] text-slate-500 font-mono">({p.stock})</span>
+                        return (
+                          <div
+                            key={p.id}
+                            onClick={() => {
+                              if (isOutOfStock) {
+                                showToast(`⚠️ "${p.name}" out of stock hai!`);
+                                return;
+                              }
+                              if (isMaxReached) {
+                                showToast(`⚠️ "${p.name}" ka kewal ${p.stock} units available hai!`);
+                                return;
+                              }
+                              setPosCart(prev => ({
+                                ...prev,
+                                [p.id]: (prev[p.id] || 0) + 1
+                              }));
+                            }}
+                            className={`p-2.5 rounded-xl border border-[#241F18] transition-all flex flex-col justify-between ${
+                              isOutOfStock
+                                ? 'bg-rose-50/70 opacity-60 cursor-not-allowed'
+                                : 'bg-[#F1EAD9]/40 hover:bg-[#F1EAD9] cursor-pointer hover:scale-[1.02]'
+                            }`}
+                          >
+                            <div className="relative w-12 h-12 rounded-full bg-white border border-[#241F18] mx-auto p-1 overflow-hidden">
+                              <img 
+                                src={p.image || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"} 
+                                alt={p.name} 
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
+                                }}
+                                className="w-full h-full object-contain" 
+                              />
+                              {isOutOfStock && (
+                                <span className="absolute inset-0 bg-rose-900/60 text-white font-bold text-[9px] flex items-center justify-center">
+                                  Out
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-center mt-1">
+                              <div className="font-bold text-xs text-slate-900 truncate">{p.name}</div>
+                              <div className="flex items-center justify-center gap-1">
+                                <span className="font-mono text-xs font-extrabold text-[#2B4430]">₹{p.price}</span>
+                                <span className="text-[10px] text-slate-500 font-mono">({p.stock})</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 {/* Right: Active Bill Summary & Print */}
-                <div className="lg:col-span-5 bg-white p-5 rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] flex flex-col justify-between space-y-4">
+                <div className="lg:col-span-5 bg-white p-4 sm:p-5 rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <h3 className="font-display font-bold text-base text-[#152A1C] border-b border-[#241F18] pb-2">
                       Counter Bill Preview
@@ -1071,7 +1174,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     else copy[id] -= 1;
                                     return copy;
                                   })}
-                                  className="w-5 h-5 bg-white border border-[#241F18] rounded flex items-center justify-center font-bold"
+                                  className="w-5 h-5 bg-white border border-[#241F18] rounded flex items-center justify-center font-bold cursor-pointer"
                                 >
                                   −
                                 </button>
@@ -1084,7 +1187,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     }
                                     setPosCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
                                   }}
-                                  className="w-5 h-5 bg-white border border-[#241F18] rounded flex items-center justify-center font-bold"
+                                  className="w-5 h-5 bg-white border border-[#241F18] rounded flex items-center justify-center font-bold cursor-pointer"
                                 >
                                   +
                                 </button>
@@ -1141,11 +1244,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             {/* TAB 3: INVOICES HISTORY */}
             {activeTab === 'invoices' && (
-              <div className="bg-white rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#241F18] pb-3">
+              <div className="bg-white rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] p-4 sm:p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-[#241F18] pb-3 flex-wrap gap-2">
                   <div>
                     <h3 className="font-display font-bold text-base text-[#152A1C]">
-                      Generated Bills & Order Records
+                      Generated Bills & Order Records ({invoices.length})
                     </h3>
                     <p className="font-hand text-xs text-[#6B6152]">
                       Sabhi past orders aur computerized bills ka record
@@ -1212,7 +1315,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         showToast(`🗑️ Invoice ${inv.invoiceNumber} delete ho gaya.`);
                                       }
                                     }}
-                                    className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded border border-transparent hover:border-rose-300 transition-colors"
+                                    className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded border border-transparent hover:border-rose-300 transition-colors cursor-pointer"
                                     title="Delete invoice record"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -1231,7 +1334,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             {/* TAB 4: STORE SETTINGS */}
             {activeTab === 'settings' && (
-              <form onSubmit={handleSaveSettings} className="bg-white rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] p-6 space-y-6 max-w-3xl">
+              <form onSubmit={handleSaveSettings} className="bg-white rounded-[4px_16px_4px_16px] border-[1.5px] border-[#241F18] shadow-[4px_4px_0_rgba(36,31,24,0.12)] p-4 sm:p-6 space-y-6 max-w-3xl">
                 <div>
                   <h3 className="font-display font-bold text-lg text-[#152A1C]">
                     Store Settings & Contact Details
@@ -1355,7 +1458,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         step="0.5"
                         required
                         value={settingsForm.deliveryRadiusKm ?? 1}
-                        onChange={(e) => setSettingsForm({ ...settingsForm, deliveryRadiusKm: Number(e.target.value) || 1 })}
+                        onChange={(e) => setSettingsForm({ ...settingsForm, deliveryRadiusKm: e.target.value === '' ? ('' as unknown as number) : (parseFloat(e.target.value) || 1) })}
                         className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30 font-mono font-bold text-[#152A1C]"
                       />
                       <span className="text-xs font-mono text-[#6B6152] shrink-0 font-bold">KM</span>
@@ -1391,7 +1494,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       type="number"
                       min="0"
                       value={settingsForm.deliveryFee ?? 10}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, deliveryFee: Number(e.target.value) })}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, deliveryFee: e.target.value === '' ? ('' as unknown as number) : (parseFloat(e.target.value) || 0) })}
                       className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30 font-mono font-bold text-[#152A1C]"
                     />
                     <p className="text-[11px] text-[#6B6152] font-hand">
@@ -1404,7 +1507,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <input
                       type="number"
                       value={settingsForm.minFreeDelivery}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, minFreeDelivery: Number(e.target.value) })}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, minFreeDelivery: e.target.value === '' ? ('' as unknown as number) : (parseFloat(e.target.value) || 0) })}
                       className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30 font-mono"
                     />
                   </div>
@@ -1421,7 +1524,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         max="500"
                         required
                         value={settingsForm.lowStockThreshold ?? 2}
-                        onChange={(e) => setSettingsForm({ ...settingsForm, lowStockThreshold: Math.max(1, Number(e.target.value) || 1) })}
+                        onChange={(e) => setSettingsForm({ ...settingsForm, lowStockThreshold: e.target.value === '' ? ('' as unknown as number) : Math.max(1, parseInt(e.target.value) || 1) })}
                         className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30 font-mono font-bold text-rose-700"
                       />
                       <span className="text-xs font-mono text-[#6B6152] shrink-0 font-bold">units</span>
@@ -1460,7 +1563,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* ADD / EDIT PRODUCT MODAL */}
       {isProductModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-[6px_22px_6px_22px] border-[1.5px] border-[#241F18] shadow-[6px_6px_0_#152A1C] p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white w-full max-w-lg rounded-[6px_22px_6px_22px] border-[1.5px] border-[#241F18] shadow-[6px_6px_0_#152A1C] p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between border-b border-[#241F18] pb-3">
               <h3 className="font-display font-bold text-lg text-[#152A1C]">
@@ -1468,7 +1571,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </h3>
               <button
                 onClick={() => setIsProductModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-[#241F18] flex items-center justify-center font-bold"
+                className="w-8 h-8 rounded-full border border-[#241F18] flex items-center justify-center font-bold cursor-pointer hover:bg-slate-100"
               >
                 ✕
               </button>
@@ -1487,7 +1590,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   placeholder="e.g. Fortune Mustard Oil / Tata Tea Gold"
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30 font-semibold"
+                  className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30 font-semibold text-sm"
                 />
               </div>
 
@@ -1540,21 +1643,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <label className="font-bold text-slate-700">MRP (₹)</label>
                   <input
                     type="number"
-                    required
+                    step="0.01"
+                    min="0"
+                    placeholder="100"
                     value={productForm.mrp}
-                    onChange={(e) => setProductForm({ ...productForm, mrp: Number(e.target.value) })}
+                    onChange={(e) => setProductForm({ ...productForm, mrp: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30 font-mono"
                   />
                 </div>
 
                 {/* Selling Price */}
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">Selling Price (₹)</label>
+                  <label className="font-bold text-slate-700">
+                    Selling Price (₹) <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     type="number"
+                    step="0.01"
+                    min="0"
                     required
+                    placeholder="90"
                     value={productForm.price}
-                    onChange={(e) => setProductForm({ ...productForm, price: Number(e.target.value) })}
+                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30 font-mono font-bold text-emerald-800"
                   />
                 </div>
@@ -1563,7 +1673,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <div className="space-y-1">
                   <label className="font-bold text-slate-700 flex items-center justify-between">
                     <span>Stock Qty</span>
-                    {productForm.stock < lowStockThreshold && (
+                    {Number(productForm.stock) < lowStockThreshold && (
                       <span className="text-[10px] text-rose-600 font-bold flex items-center gap-0.5">
                         <AlertTriangle className="w-2.5 h-2.5" /> Low
                       </span>
@@ -1572,15 +1682,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <input
                     type="number"
                     min="0"
+                    required
+                    placeholder="50"
                     value={productForm.stock}
-                    onChange={(e) => setProductForm({ ...productForm, stock: Math.max(0, Number(e.target.value) || 0) })}
+                    onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
                     className={`w-full px-3 py-2 rounded-xl border bg-[#F1EAD9]/30 font-mono font-bold ${
-                      productForm.stock < lowStockThreshold
+                      Number(productForm.stock) < lowStockThreshold
                         ? 'border-rose-500 text-rose-700'
                         : 'border-[#241F18]'
                     }`}
                   />
-                  {productForm.stock < lowStockThreshold && (
+                  {Number(productForm.stock) < lowStockThreshold && (
                     <p className="text-[10px] text-rose-600 font-medium">
                       Stock &lt; {lowStockThreshold} (Triggers low-stock alert)
                     </p>
@@ -1629,13 +1741,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsProductModalOpen(false)}
-                  className="px-4 py-2 rounded-[4px_10px_4px_10px] border border-[#241F18] font-bold bg-white text-slate-700"
+                  className="px-4 py-2 rounded-[4px_10px_4px_10px] border border-[#241F18] font-bold bg-white text-slate-700 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#2B4430] text-[#F1EAD9] px-6 py-2 rounded-[4px_10px_4px_10px] font-bold border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18]"
+                  className="bg-[#2B4430] hover:bg-[#152A1C] text-[#F1EAD9] px-6 py-2 rounded-[4px_10px_4px_10px] font-bold border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] cursor-pointer"
                 >
                   {editingProduct ? 'Save Changes' : '+ Add Product'}
                 </button>

@@ -203,47 +203,55 @@ export default function App() {
 
   // Save to localStorage whenever critical state changes and broadcast across tabs
   useEffect(() => {
-    localStorage.setItem('khurshid_products', JSON.stringify(products));
     try {
+      localStorage.setItem('khurshid_products', JSON.stringify(products));
       if (typeof BroadcastChannel !== 'undefined') {
         const ch = new BroadcastChannel('khurshid_store_channel');
         ch.postMessage({ type: 'SYNC_PRODUCTS', payload: products });
         ch.close();
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Error saving products to localStorage', e);
+    }
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem('khurshid_settings', JSON.stringify(settings));
     try {
+      localStorage.setItem('khurshid_settings', JSON.stringify(settings));
       if (typeof BroadcastChannel !== 'undefined') {
         const ch = new BroadcastChannel('khurshid_store_channel');
         ch.postMessage({ type: 'SYNC_SETTINGS', payload: settings });
         ch.close();
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Error saving settings to localStorage', e);
+    }
   }, [settings]);
 
   useEffect(() => {
-    localStorage.setItem('khurshid_invoices', JSON.stringify(invoices));
     try {
+      localStorage.setItem('khurshid_invoices', JSON.stringify(invoices));
       if (typeof BroadcastChannel !== 'undefined') {
         const ch = new BroadcastChannel('khurshid_store_channel');
         ch.postMessage({ type: 'SYNC_INVOICES', payload: invoices });
         ch.close();
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Error saving invoices to localStorage', e);
+    }
   }, [invoices]);
 
   useEffect(() => {
-    localStorage.setItem('khurshid_cart', JSON.stringify(cart));
     try {
+      localStorage.setItem('khurshid_cart', JSON.stringify(cart));
       if (typeof BroadcastChannel !== 'undefined') {
         const ch = new BroadcastChannel('khurshid_store_channel');
         ch.postMessage({ type: 'SYNC_CART', payload: cart });
         ch.close();
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Error saving cart to localStorage', e);
+    }
   }, [cart]);
 
   // Convert cart map to full CartItem array
@@ -368,7 +376,7 @@ export default function App() {
       timeStr: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
       customer: {
         name: customerName.trim() || 'Counter Customer',
-        phone: cleanPhoneNumber(customerPhone) || '9162288060',
+        phone: cleanPhoneNumber(customerPhone) || (customerPhone.trim() ? customerPhone.trim() : 'Walk-in'),
         address: 'Direct Counter Sale',
         deliveryType: 'pickup',
         paymentMethod: 'counter_cash'
@@ -415,11 +423,13 @@ export default function App() {
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
       const matchesCategory = selectedCategory === 'All Items' || p.category === selectedCategory;
-      const matchesSearch = searchTerm.trim() === '' || 
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.hindiName && p.hindiName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        p.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase()));
+      const searchLower = searchTerm.trim().toLowerCase();
+      const matchesSearch = searchLower === '' || 
+        p.name.toLowerCase().includes(searchLower) ||
+        (p.hindiName && p.hindiName.toLowerCase().includes(searchLower)) ||
+        p.category.toLowerCase().includes(searchLower) ||
+        (p.unit && p.unit.toLowerCase().includes(searchLower)) ||
+        (p.description && p.description.toLowerCase().includes(searchLower));
       return matchesCategory && matchesSearch;
     });
   }, [products, selectedCategory, searchTerm]);
