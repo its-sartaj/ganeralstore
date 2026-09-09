@@ -13,7 +13,7 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   upiId: "9162288060@upi",
   minFreeDelivery: 499,
   deliveryFee: 10,
-  adminPin: "kgs2026",
+  adminPin: "Khurshid@8587",
   lowStockThreshold: 2,
   googleMapsUrl: "https://maps.app.goo.gl/eYQJgkGnchc1DfPr8",
   deliveryRadiusKm: 1

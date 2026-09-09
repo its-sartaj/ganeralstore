@@ -62,6 +62,9 @@ export default function App() {
         if (parsed.phone2 === '85870799786') {
           parsed.phone2 = '8587079786';
         }
+        if (parsed.adminPin === 'kgs2026' || parsed.adminPin === '1234') {
+          parsed.adminPin = DEFAULT_STORE_SETTINGS.adminPin;
+        }
         return {
           ...DEFAULT_STORE_SETTINGS,
           ...parsed,

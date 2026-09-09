@@ -134,8 +134,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const entered = (passwordInput || '').trim();
-    const correctPin = (settings.adminPin || 'kgs2026').trim();
-    if (entered === correctPin || (correctPin === 'kgs2026' && entered === '1234')) {
+    const correctPin = (settings.adminPin || 'Khurshid@8587').trim();
+    if (entered === correctPin) {
       setIsAuthenticated(true);
       setLoginError(false);
       setPasswordInput('');
