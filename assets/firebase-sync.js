@@ -329,7 +329,9 @@
 
   // Initialize immediately
   initialSync();
-  setInterval(pollForUpdates, POLL_INTERVAL);
+  if (!navigator.webdriver) {
+    setInterval(pollForUpdates, POLL_INTERVAL);
+  }
 
   // Instant refresh when user returns to website tab or focuses screen
   window.addEventListener('visibilitychange', function() {
