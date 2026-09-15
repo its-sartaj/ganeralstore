@@ -102,24 +102,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {quantity > 0 && !isOutOfStock && (
             <div className="flex items-center border-[1.5px] border-[#241F18] rounded-md overflow-hidden bg-[#F1EAD9]">
               <button
+                type="button"
                 onClick={() => onUpdateQuantity(product.id, quantity - 1)}
-                className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center font-bold text-xs sm:text-sm text-[#2B4430] hover:bg-[#DCD0B4] transition-colors touch-manipulation"
+                className="min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center font-bold text-sm sm:text-base text-[#2B4430] hover:bg-[#DCD0B4] transition-colors touch-manipulation cursor-pointer"
                 title="Decrease"
+                aria-label={`Decrease quantity of ${product.name}`}
               >
                 −
               </button>
-              <span className="w-5 sm:w-6 text-center text-[10px] sm:text-xs font-mono font-bold text-[#241F18]">
+              <span 
+                className="w-6 sm:w-7 text-center text-xs font-mono font-bold text-[#241F18]"
+                aria-label={`Current quantity ${quantity}`}
+              >
                 {quantity}
               </span>
               <button
+                type="button"
                 disabled={isMaxStockReached}
                 onClick={() => onUpdateQuantity(product.id, Math.min(product.stock, quantity + 1))}
-                className={`w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center font-bold text-xs sm:text-sm transition-colors touch-manipulation ${
+                className={`min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center font-bold text-sm sm:text-base transition-colors touch-manipulation ${
                   isMaxStockReached
                     ? 'text-slate-300 bg-slate-100 cursor-not-allowed'
-                    : 'text-[#2B4430] hover:bg-[#DCD0B4]'
+                    : 'text-[#2B4430] hover:bg-[#DCD0B4] cursor-pointer'
                 }`}
                 title={isMaxStockReached ? `Max available stock (${product.stock}) reached` : "Increase"}
+                aria-label={`Increase quantity of ${product.name}`}
               >
                 +
               </button>
@@ -130,32 +137,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Action Button */}
         {isOutOfStock ? (
           <button 
+            type="button"
             disabled
-            className="w-full py-1.5 sm:py-2 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] bg-slate-200 text-slate-500 font-bold text-[11px] sm:text-xs border border-slate-300 cursor-not-allowed"
+            className="w-full min-h-[44px] py-2 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] bg-slate-200 text-slate-600 font-bold text-xs border border-slate-300 cursor-not-allowed"
           >
             Out of Stock
           </button>
         ) : quantity > 0 ? (
           <button
+            type="button"
             disabled={isMaxStockReached}
             onClick={() => onUpdateQuantity(product.id, Math.min(product.stock, quantity + 1))}
-            className={`w-full py-1.5 sm:py-2 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] font-bold text-[11px] sm:text-xs border-[1.5px] border-[#241F18] transition-all flex items-center justify-center gap-1 touch-manipulation ${
+            aria-label={`In cart: ${quantity} units of ${product.name}. Click to add another.`}
+            className={`w-full min-h-[44px] py-2 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] font-bold text-xs border-[1.5px] border-[#241F18] transition-all flex items-center justify-center gap-1.5 touch-manipulation ${
               isMaxStockReached
                 ? 'bg-[#152A1C] text-[#DCE6DF] cursor-default'
                 : 'bg-[#2E7D42] text-white shadow-[1.5px_1.5px_0_#241F18] sm:shadow-[2px_2px_0_#241F18] cursor-pointer'
             }`}
           >
-            <Check className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#C68A2E] shrink-0" />
+            <Check aria-hidden="true" className="w-4 h-4 text-[#C68A2E] shrink-0" />
             <span className="truncate">
               {isMaxStockReached ? `Max (${quantity})` : `In Cart (${quantity}) +`}
             </span>
           </button>
         ) : (
           <button
+            type="button"
             onClick={() => onAddToCart(product, 1)}
-            className="w-full py-2 sm:py-2.5 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] bg-[#2B4430] text-[#F1EAD9] font-bold text-[11px] sm:text-xs border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] sm:shadow-[2px_2px_0_#241F18] hover:shadow-[3px_3px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-1 sm:gap-1.5 touch-manipulation"
+            aria-label={`Add ${product.name} to cart for ${formatCurrency(product.price)}`}
+            className="w-full min-h-[44px] py-2.5 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] bg-[#2B4430] text-[#F1EAD9] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] sm:shadow-[2px_2px_0_#241F18] hover:shadow-[3px_3px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-1.5 touch-manipulation"
           >
-            <ShoppingBag className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#C68A2E] shrink-0" />
+            <ShoppingBag aria-hidden="true" className="w-4 h-4 text-[#C68A2E] shrink-0" />
             <span>Add to Cart</span>
           </button>
         )}

@@ -74,15 +74,19 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             <div className="flex items-center gap-1.5">
               {items.length > 0 && (
                 <button
+                  type="button"
                   onClick={onClearCart}
-                  className="font-hand text-xs text-[#B14B2C] hover:underline font-bold px-2 py-1"
+                  aria-label="Clear all items from cart"
+                  className="font-hand text-xs text-[#B14B2C] hover:underline font-bold px-2.5 py-1.5 min-h-[44px] cursor-pointer"
                 >
                   Clear all
                 </button>
               )}
               <button
+                type="button"
                 onClick={onClose}
-                className="w-8 h-8 rounded-full border border-[#241F18] bg-white flex items-center justify-center text-[#6B6152] hover:text-[#241F18] font-bold text-sm"
+                aria-label="Close cart drawer"
+                className="w-9 h-9 rounded-full border border-[#241F18] bg-white flex items-center justify-center text-[#4E4639] hover:text-[#241F18] font-bold text-sm min-w-[44px] min-h-[44px] cursor-pointer"
               >
                 ✕
               </button>
@@ -93,7 +97,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           {items.length > 0 && (
             <div className="bg-[#2B4430] text-[#F1EAD9] px-4 py-2 text-xs flex items-center justify-between border-b border-[#241F18]">
               <span className="flex items-center gap-1.5 font-medium">
-                <Truck className="w-3.5 h-3.5 text-[#C68A2E]" />
+                <Truck aria-hidden="true" className="w-3.5 h-3.5 text-[#C68A2E]" />
                 {isFreeDelivery ? (
                   <span className="font-bold text-[#C68A2E]">🎉 FREE Home Delivery Active!</span>
                 ) : (
@@ -110,18 +114,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <div className="flex-1 overflow-y-auto p-5 space-y-3">
             {items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
-                <div className="w-16 h-16 rounded-full bg-white border-[1.5px] border-dashed border-[#6B6152] flex items-center justify-center text-3xl">
+                <div className="w-16 h-16 rounded-full bg-white border-[1.5px] border-dashed border-[#4E4639] flex items-center justify-center text-3xl" aria-hidden="true">
                   🧺
                 </div>
-                <h4 className="font-hand text-lg text-[#152A1C] font-bold">
+                <h3 className="font-hand text-lg text-[#152A1C] font-bold">
                   Aapka cart khaali hai.
-                </h4>
-                <p className="text-xs text-[#6B6152] max-w-xs leading-relaxed">
+                </h3>
+                <p className="text-xs text-[#4E4639] max-w-xs leading-relaxed">
                   Dukaan se apna manpasand ration, oil, chawal ya masala add karein.
                 </p>
                 <button
+                  type="button"
                   onClick={onClose}
-                  className="mt-2 bg-[#2B4430] text-[#F1EAD9] px-5 py-2 rounded-[4px_12px_4px_12px] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18]"
+                  aria-label="Start shopping groceries now"
+                  className="mt-2 bg-[#2B4430] text-[#F1EAD9] px-5 py-2.5 rounded-[4px_12px_4px_12px] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] min-h-[44px] cursor-pointer"
                 >
                   Shop Now (दुकान देखें)
                 </button>
@@ -133,7 +139,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   className="flex gap-3 py-3 border-b border-dashed border-[#DCD0B4] items-center bg-white/60 p-2.5 rounded-xl"
                 >
                   {/* Thumb */}
-                  <div className="w-12 h-12 rounded-full bg-white border-[1.5px] border-dashed border-[#6B6152] flex items-center justify-center p-1 shrink-0 overflow-hidden">
+                  <div className="w-12 h-12 rounded-full bg-white border-[1.5px] border-dashed border-[#4E4639] flex items-center justify-center p-1 shrink-0 overflow-hidden">
                     <img 
                       src={item.product.image || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"} 
                       alt={item.product.name} 
@@ -149,7 +155,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     <div className="font-bold text-xs sm:text-sm text-[#241F18] truncate">
                       {item.product.name}
                     </div>
-                    <div className="font-hand text-xs text-[#6B6152]">
+                    <div className="font-hand text-xs text-[#4E4639]">
                       {item.product.unit} · Qty {item.quantity}
                     </div>
                     <div className="font-mono text-xs font-bold text-[#2B4430] mt-0.5">
@@ -161,22 +167,29 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <div className="flex flex-col items-end gap-1.5">
                     <div className="flex items-center border-[1.5px] border-[#241F18] rounded-md overflow-hidden bg-white">
                       <button
+                        type="button"
                         onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
-                        className="w-5 h-5 flex items-center justify-center font-bold text-xs text-[#2B4430] hover:bg-[#F1EAD9]"
+                        aria-label={`Decrease quantity of ${item.product.name}`}
+                        className="min-w-[36px] min-h-[36px] flex items-center justify-center font-bold text-sm text-[#2B4430] hover:bg-[#F1EAD9] cursor-pointer touch-manipulation"
                         title="Decrease"
                       >
                         −
                       </button>
-                      <span className="w-5 text-center text-xs font-mono font-bold text-[#241F18]">
+                      <span 
+                        className="w-6 text-center text-xs font-mono font-bold text-[#241F18]"
+                        aria-label={`Current quantity ${item.quantity}`}
+                      >
                         {item.quantity}
                       </span>
                       <button
+                        type="button"
                         disabled={item.quantity >= item.product.stock}
                         onClick={() => onUpdateQuantity(item.product.id, Math.min(item.product.stock, item.quantity + 1))}
-                        className={`w-5 h-5 flex items-center justify-center font-bold text-xs ${
+                        aria-label={`Increase quantity of ${item.product.name}`}
+                        className={`min-w-[36px] min-h-[36px] flex items-center justify-center font-bold text-sm touch-manipulation ${
                           item.quantity >= item.product.stock
                             ? 'text-slate-300 bg-slate-100 cursor-not-allowed'
-                            : 'text-[#2B4430] hover:bg-[#F1EAD9]'
+                            : 'text-[#2B4430] hover:bg-[#F1EAD9] cursor-pointer'
                         }`}
                         title={item.quantity >= item.product.stock ? `Max stock (${item.product.stock})` : "Increase"}
                       >
@@ -185,8 +198,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </div>
 
                     <button
+                      type="button"
                       onClick={() => onRemoveItem(item.product.id)}
-                      className="text-[11px] font-bold text-[#B14B2C] hover:underline"
+                      aria-label={`Remove ${item.product.name} from cart`}
+                      className="text-xs font-bold text-[#B14B2C] hover:underline min-h-[36px] px-1 py-1 cursor-pointer flex items-center justify-center"
                     >
                       Remove
                     </button>
@@ -241,7 +256,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[10px] font-bold text-[#B14B2C] hover:underline flex items-center gap-1"
+                    aria-label="View Shop Location on Google Maps"
+                    className="text-[11px] font-bold text-[#8F371C] hover:underline inline-flex items-center gap-1 min-h-[36px]"
                   >
                     <span>📍 View Shop on Google Maps (दुकान का नक्शा देखें) ↗</span>
                   </a>
@@ -252,19 +268,23 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <div className="space-y-2 pt-1">
                 {/* WhatsApp Checkout */}
                 <button
+                  type="button"
                   onClick={handleWhatsAppCheckout}
-                  className="w-full bg-[#25D366] text-[#0e3d1e] border-[1.5px] border-[#241F18] p-3.5 rounded-[5px_14px_5px_14px] font-bold text-sm flex items-center justify-center gap-2 shadow-[3px_3px_0_#241F18] hover:shadow-[4px_4px_0_#241F18] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                  aria-label={`Checkout on WhatsApp for total ${formatCurrency(grandTotal)}`}
+                  className="w-full min-h-[48px] bg-[#25D366] text-[#0e3d1e] border-[1.5px] border-[#241F18] p-3.5 rounded-[5px_14px_5px_14px] font-bold text-sm flex items-center justify-center gap-2 shadow-[3px_3px_0_#241F18] hover:shadow-[4px_4px_0_#241F18] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer touch-manipulation"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle aria-hidden="true" className="w-4 h-4" />
                   <span>Checkout on WhatsApp</span>
                 </button>
 
                 {/* Generate Tax Invoice / Cash Memo */}
                 <button
+                  type="button"
                   onClick={onProceedToBill}
-                  className="w-full bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] p-3 rounded-[5px_14px_5px_14px] font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[3px_3px_0_#241F18] hover:bg-[#152A1C] transition-colors cursor-pointer"
+                  aria-label="Generate Computerized Bill or Cash Memo"
+                  className="w-full min-h-[48px] bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] p-3 rounded-[5px_14px_5px_14px] font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[3px_3px_0_#241F18] hover:bg-[#152A1C] transition-colors cursor-pointer touch-manipulation"
                 >
-                  <Receipt className="w-4 h-4 text-[#C68A2E]" />
+                  <Receipt aria-hidden="true" className="w-4 h-4 text-[#C68A2E]" />
                   <span>Generate Computerized Bill / पर्ची</span>
                 </button>
               </div>

@@ -37,7 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-1.5 font-medium truncate">
             <span className="w-2 h-2 rounded-full bg-[#55642F] shrink-0" />
             <span className="hidden sm:inline truncate">🏪 {settings.tagline || 'Roz ka saaman, apni gali se'} |</span>
-            <span className="bg-[#C68A2E]/20 text-[#C68A2E] border border-[#C68A2E]/40 px-2 py-0.5 rounded-full font-bold text-[10px] sm:text-[11px] shrink-0">
+            <span className="bg-[#FFE082]/20 text-[#FFE082] border border-[#FFE082]/40 px-2 py-0.5 rounded-full font-bold text-[10px] sm:text-[11px] shrink-0">
               🛵 Delivery: Within {settings.deliveryRadiusKm ?? 1} KM (₹{settings.deliveryFee ?? 10})
             </span>
           </div>
@@ -49,19 +49,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-1 bg-white/10 hover:bg-white/20 text-[#F1EAD9] hover:text-white px-2 py-0.5 rounded-full font-bold transition-all border border-white/20"
+              className="hidden md:flex items-center gap-1 bg-white/10 hover:bg-white/20 text-[#F1EAD9] hover:text-white px-2.5 py-1 rounded-full font-bold transition-all border border-white/20 min-h-[36px]"
               title="Open shop location on Google Maps"
+              aria-label="Open Khurshid General Store location on Google Maps"
             >
-              <MapPin className="w-3.5 h-3.5 text-[#B14B2C]" />
+              <MapPin aria-hidden="true" className="w-3.5 h-3.5 text-[#B14B2C]" />
               <span className="font-sans">📍 Maps</span>
             </a>
 
             <a 
               href={`tel:${cleanPhoneNumber(settings.phone1)}`} 
-              className="flex items-center gap-1 text-[#F1EAD9] hover:text-[#C68A2E] transition-colors"
+              className="flex items-center gap-1 text-[#F1EAD9] hover:text-[#C68A2E] transition-colors py-1 px-1.5 rounded-md min-h-[44px] touch-manipulation"
               title="Call Store"
+              aria-label={`Call Khurshid General Store at ${settings.phone1}`}
             >
-              <PhoneCall className="w-3.5 h-3.5 text-[#C68A2E]" />
+              <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#C68A2E]" />
               <span className="hidden xs:inline">{settings.phone1}</span>
               <span className="xs:hidden">Call</span>
             </a>
@@ -70,9 +72,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`} 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-[#0e3d1e] px-2 py-0.5 rounded-full font-bold transition-colors"
+              className="flex items-center gap-1 bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-[#0e3d1e] px-2.5 py-1 rounded-full font-bold transition-colors min-h-[44px] touch-manipulation"
+              aria-label="Chat with Khurshid General Store on WhatsApp"
             >
-              <MessageCircle className="w-3.5 h-3.5" />
+              <MessageCircle aria-hidden="true" className="w-3.5 h-3.5" />
               <span>WhatsApp</span>
             </a>
           </div>
@@ -87,14 +90,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Brand Logo & Name */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-[3px_11px_3px_11px] sm:rounded-[3px_13px_3px_13px] p-1 border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#152A1C] sm:shadow-[3px_3px_0_#152A1C] flex items-center justify-center shrink-0">
-              <Store className="w-5 h-5 sm:w-7 sm:h-7 text-[#2B4430]" />
+              <Store aria-hidden="true" className="w-5 h-5 sm:w-7 sm:h-7 text-[#2B4430]" />
             </div>
             <div className="min-w-0">
               <a href="#shop" className="block truncate">
                 <div className="font-display font-bold text-sm sm:text-lg lg:text-xl text-[#152A1C] leading-tight tracking-tight truncate">
                   {settings.storeName}
                 </div>
-                <div className="font-hand text-[11px] sm:text-xs text-[#6B6152] leading-tight truncate">
+                <div className="font-hand text-[11px] sm:text-xs text-[#4E4639] leading-tight truncate">
                   {settings.tagline}
                 </div>
               </a>
@@ -104,18 +107,21 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Desktop Search Bar */}
           <div className="flex-1 max-w-md hidden md:block">
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B6152]" />
+              <Search aria-hidden="true" className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E4639]" />
               <input
                 type="text"
+                aria-label="Search products"
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Search Atta, Rice, Ghee, Masala, Tea, Biscuits..."
-                className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-white border-[1.5px] border-[#241F18] rounded-[4px_12px_4px_12px] focus:outline-hidden focus:ring-2 focus:ring-[#C68A2E] shadow-[2px_2px_0_rgba(36,31,24,0.1)] placeholder:text-[#6B6152]"
+                className="w-full pl-9 pr-12 py-2 text-xs sm:text-sm bg-white border-[1.5px] border-[#241F18] rounded-[4px_12px_4px_12px] focus:outline-hidden focus:ring-2 focus:ring-[#C68A2E] shadow-[2px_2px_0_rgba(36,31,24,0.1)] placeholder:text-[#6B6152]"
               />
               {searchTerm && (
                 <button
+                  type="button"
                   onClick={() => onSearchChange('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#6B6152] hover:text-[#241F18] font-bold"
+                  aria-label="Clear search input"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#4E4639] hover:text-[#241F18] font-bold px-2 py-1 min-h-[36px] flex items-center justify-center cursor-pointer"
                 >
                   Clear
                 </button>
@@ -128,12 +134,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             
             {/* Cart Button */}
             <button
+              type="button"
               onClick={onOpenCart}
-              className="flex items-center gap-1.5 sm:gap-2 bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-[4px_10px_4px_10px] sm:rounded-[4px_12px_4px_12px] font-bold text-xs sm:text-sm shadow-[2px_2px_0_#241F18] sm:shadow-[3px_3px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer touch-manipulation"
+              className="flex items-center gap-1.5 sm:gap-2 bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] px-3 sm:px-4 py-2 rounded-[4px_10px_4px_10px] sm:rounded-[4px_12px_4px_12px] font-bold text-xs sm:text-sm shadow-[2px_2px_0_#241F18] sm:shadow-[3px_3px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer touch-manipulation min-h-[44px]"
             >
-              <span>🧺</span>
-              <span className="hidden xs:inline">Cart</span>
-              <span className="bg-[#C68A2E] text-[#241F18] rounded-full min-w-4 sm:min-w-5 h-4 sm:h-5 px-1 text-[10px] sm:text-xs font-mono font-bold flex items-center justify-center">
+              <span aria-hidden="true">🧺</span>
+              <span>Cart</span>
+              <span className="bg-[#C68A2E] text-[#241F18] rounded-full min-w-5 h-5 px-1 text-[11px] sm:text-xs font-mono font-bold flex items-center justify-center">
                 {cartCount}
               </span>
               {cartTotal > 0 && (
@@ -150,18 +157,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Mobile Search Bar */}
         <div className="mt-2 md:hidden">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6152]" />
+            <Search aria-hidden="true" className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#4E4639]" />
             <input
               type="text"
+              aria-label="Search products"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search Atta, Rice, Dal, Tel, Ghee, Masala..."
-              className="w-full pl-8 pr-7 py-1.5 text-xs bg-white border-[1.5px] border-[#241F18] rounded-[4px_10px_4px_10px] focus:outline-hidden focus:ring-1 focus:ring-[#C68A2E]"
+              className="w-full pl-9 pr-10 py-2 text-xs bg-white border-[1.5px] border-[#241F18] rounded-[4px_10px_4px_10px] focus:outline-hidden focus:ring-1 focus:ring-[#C68A2E] min-h-[44px]"
             />
             {searchTerm && (
               <button
+                type="button"
                 onClick={() => onSearchChange('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6B6152] font-bold"
+                aria-label="Clear search input"
+                className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-sm text-[#4E4639] font-bold min-w-[44px] min-h-[44px] cursor-pointer touch-manipulation"
               >
                 ✕
               </button>

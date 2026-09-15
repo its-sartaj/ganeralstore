@@ -32,14 +32,14 @@ export const Footer: React.FC<FooterProps> = ({
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-[3px_10px_3px_10px] bg-white text-[#2B4430] flex items-center justify-center font-bold border border-[#241F18]">
-                <Store className="w-5 h-5" />
+                <Store aria-hidden="true" className="w-5 h-5" />
               </div>
-              <h4 className="font-display text-lg font-bold text-white tracking-tight">
+              <h2 className="font-display text-lg font-bold text-white tracking-tight">
                 {settings.storeName}
-              </h4>
+              </h2>
             </div>
 
-            <p className="text-xs sm:text-sm text-[#AFC0B4] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#DCE6DF] leading-relaxed">
               {settings.address}, {settings.cityState}
             </p>
 
@@ -49,33 +49,42 @@ export const Footer: React.FC<FooterProps> = ({
                 href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 bg-[#B14B2C] hover:bg-[#8F371C] text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-[#241F18] shadow-xs transition-colors"
+                aria-label="View Khurshid General Store Location on Google Maps"
+                className="inline-flex items-center gap-1.5 bg-[#B14B2C] hover:bg-[#8F371C] text-white text-xs font-bold px-3 py-2 rounded-lg border border-[#241F18] shadow-xs transition-colors min-h-[44px]"
                 title="View Khurshid General Store on Google Maps"
               >
-                <MapPin className="w-3.5 h-3.5" />
+                <MapPin aria-hidden="true" className="w-4 h-4" />
                 <span>📍 View Location on Google Maps (नक्शा) ↗</span>
               </a>
 
               <div className="text-[11px] text-[#F1EAD9] font-mono flex items-center gap-1.5">
-                <span className="text-[#C68A2E]">🛵 Delivery Area:</span>
+                <span className="text-[#FFE082]">🛵 Delivery Area:</span>
                 <span className="font-bold bg-[#152A1C] px-1.5 py-0.5 rounded text-white border border-white/20">
                   Strictly up to {settings.deliveryRadiusKm ?? 1} km radius only
                 </span>
               </div>
             </div>
 
-            <div className="space-y-1.5 pt-1 text-xs font-mono">
+            <div className="space-y-2 pt-1 text-xs font-mono">
               <div className="flex items-center gap-2 text-white">
-                <PhoneCall className="w-3.5 h-3.5 text-[#C68A2E]" />
-                <a href={`tel:${cleanPhoneNumber(settings.phone1)}`} className="hover:text-[#C68A2E]">
+                <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#FFE082]" />
+                <a 
+                  href={`tel:${cleanPhoneNumber(settings.phone1)}`} 
+                  aria-label={`Call primary phone ${settings.phone1}`}
+                  className="hover:text-[#FFE082] py-1 inline-block min-h-[36px]"
+                >
                   +91 {settings.phone1} (Primary)
                 </a>
               </div>
 
               {settings.phone2 && (
                 <div className="flex items-center gap-2 text-[#DCE6DF]">
-                  <PhoneCall className="w-3.5 h-3.5 text-[#9FB2CE]" />
-                  <a href={`tel:${cleanPhoneNumber(settings.phone2)}`} className="hover:text-white">
+                  <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#9FB2CE]" />
+                  <a 
+                    href={`tel:${cleanPhoneNumber(settings.phone2)}`} 
+                    aria-label={`Call secondary phone ${settings.phone2}`}
+                    className="hover:text-white py-1 inline-block min-h-[36px]"
+                  >
                     +91 {settings.phone2} (Secondary)
                   </a>
                 </div>
@@ -83,8 +92,12 @@ export const Footer: React.FC<FooterProps> = ({
 
               {settings.email && (
                 <div className="flex items-center gap-2 text-[#DCE6DF]">
-                  <Mail className="w-3.5 h-3.5 text-[#C68A2E]" />
-                  <a href={`mailto:${settings.email}`} className="hover:text-white">
+                  <Mail aria-hidden="true" className="w-3.5 h-3.5 text-[#FFE082]" />
+                  <a 
+                    href={`mailto:${settings.email}`} 
+                    aria-label={`Send email to ${settings.email}`}
+                    className="hover:text-white py-1 inline-block min-h-[36px]"
+                  >
                     {settings.email}
                   </a>
                 </div>
@@ -94,18 +107,18 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Store Hours */}
           <div className="space-y-3">
-            <h4 className="font-display text-sm font-bold text-white uppercase tracking-wider text-[#C68A2E] flex items-center gap-2">
-              <Clock className="w-4 h-4" />
+            <h3 className="font-display text-sm font-bold text-white uppercase tracking-wider text-[#FFE082] flex items-center gap-2">
+              <Clock aria-hidden="true" className="w-4 h-4" />
               <span>Store Hours (दुकान का समय)</span>
-            </h4>
-            <ul className="space-y-2 text-xs sm:text-sm text-[#AFC0B4] font-mono bg-white/5 p-4 rounded-xl border border-white/10">
+            </h3>
+            <ul className="space-y-2 text-xs sm:text-sm text-[#DCE6DF] font-mono bg-white/5 p-4 rounded-xl border border-white/10">
               <li className="flex justify-between items-center py-1 border-b border-white/10">
                 <span className="text-white">Monday – Saturday</span>
-                <span className="text-[#C68A2E] font-bold">6:00 AM – 9:00 PM</span>
+                <span className="text-[#FFE082] font-bold">6:00 AM – 9:00 PM</span>
               </li>
               <li className="flex justify-between items-center py-1">
                 <span className="text-white">Sunday (रविवार)</span>
-                <span className="text-[#C68A2E] font-bold">6:00 AM – 9:00 PM</span>
+                <span className="text-[#FFE082] font-bold">6:00 AM – 9:00 PM</span>
               </li>
             </ul>
           </div>
@@ -113,17 +126,19 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom copyright & Discreet Merchant Access */}
-        <div className="mt-8 pt-4 border-t border-dashed border-white/20 flex flex-col sm:flex-row items-center justify-between text-xs text-[#8FA095] gap-2">
+        <div className="mt-8 pt-4 border-t border-dashed border-white/20 flex flex-col sm:flex-row items-center justify-between text-xs text-[#AFC0B4] gap-2">
           <div className="font-hand">
             © {new Date().getFullYear()} {settings.storeName}. Order karein, payment WhatsApp par confirm karein.
           </div>
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={onOpenAdmin}
-              className="opacity-30 hover:opacity-100 transition-opacity text-[10px] text-white/50 hover:text-[#C68A2E] flex items-center gap-1 cursor-pointer"
+              aria-label="Shop owner and staff login"
+              className="opacity-40 hover:opacity-100 transition-opacity text-[11px] text-white/70 hover:text-[#C68A2E] flex items-center gap-1.5 cursor-pointer min-h-[44px] px-2"
               title="Shop Owner Login (#admin)"
             >
-              <Lock className="w-2.5 h-2.5" />
+              <Lock aria-hidden="true" className="w-3 h-3" />
               <span>Staff / Owner</span>
             </button>
           </div>

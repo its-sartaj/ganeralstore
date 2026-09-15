@@ -27,33 +27,34 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           
           {/* Eyebrow badge */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <div className="inline-flex items-center gap-1.5 bg-white text-[#152A1C] px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border-[1.5px] border-dashed border-[#6B6152] shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-[#55642F] shrink-0" />
+            <div className="inline-flex items-center gap-1.5 bg-white text-[#152A1C] px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border-[1.5px] border-dashed border-[#4E4639] shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#3D521F] shrink-0" aria-hidden="true" />
               <span>Open Now · Same-Day Delivery</span>
             </div>
 
             {/* 1 KM Delivery Radius Pill */}
-            <div className="inline-flex items-center gap-1 bg-[#C68A2E]/15 text-[#8A5A12] px-2.5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border border-[#C68A2E]/40">
+            <div className="inline-flex items-center gap-1 bg-[#C68A2E]/20 text-[#523306] px-2.5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border border-[#C68A2E]/50">
               <span>🛵 Delivery:</span>
-              <span className="bg-[#8A5A12] text-white px-1.5 py-0.2 rounded-full text-[10px] font-mono">₹{settings.deliveryFee ?? 10} (Within {settings.deliveryRadiusKm ?? 1} KM)</span>
+              <span className="bg-[#523306] text-white px-2 py-0.5 rounded-full text-[10px] font-mono font-bold">₹{settings.deliveryFee ?? 10} (Within {settings.deliveryRadiusKm ?? 1} KM)</span>
             </div>
           </div>
 
-          {/* Main Display Headline */}
+          {/* Main Display Headline (Single H1 on Page) */}
           <h1 className="font-display text-xl xs:text-2xl sm:text-4xl lg:text-5xl font-bold text-[#152A1C] leading-[1.2] sm:leading-[1.1] tracking-tight break-words">
             Ration se lekar <em className="not-italic text-[#B14B2C] underline decoration-[#C68A2E] decoration-wavy decoration-2">rozmarra</em> tak, sab kuch yahin.
           </h1>
 
           {/* Lead Paragraph with Delivery limit callout */}
-          <p className="text-xs sm:text-base text-[#6B6152] leading-relaxed max-w-xl font-medium break-words">
+          <p className="text-xs sm:text-base text-[#4E4639] leading-relaxed max-w-xl font-medium break-words">
             Grocery, dairy, snacks aur ghar ki zaroorat ka har saamaan — dukaan se <strong>{settings.deliveryRadiusKm ?? 1} km ke daayre mein</strong> superfast home delivery, ya dukaan par counter pickup karein.
           </p>
 
           {/* CTAs */}
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:flex sm:flex-wrap gap-2.5 sm:gap-3 pt-1 w-full">
             <button
+              type="button"
               onClick={onScrollToProducts}
-              className="w-full sm:w-auto bg-[#2B4430] text-[#F1EAD9] px-4 sm:px-6 py-2.5 sm:py-3 rounded-[5px_12px_5px_12px] sm:rounded-[5px_16px_5px_16px] font-bold text-xs sm:text-base border-[1.5px] border-[#241F18] shadow-[2.5px_2.5px_0_#241F18] sm:shadow-[4px_4px_0_#241F18] hover:shadow-[4px_4px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer text-center touch-manipulation"
+              className="w-full sm:w-auto bg-[#2B4430] text-[#F1EAD9] px-5 sm:px-6 py-3 rounded-[5px_12px_5px_12px] sm:rounded-[5px_16px_5px_16px] font-bold text-xs sm:text-base border-[1.5px] border-[#241F18] shadow-[2.5px_2.5px_0_#241F18] sm:shadow-[4px_4px_0_#241F18] hover:shadow-[4px_4px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer text-center touch-manipulation min-h-[48px] flex items-center justify-center"
             >
               Shop Now (सामान देखें) →
             </button>
@@ -63,10 +64,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#B14B2C] text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-[5px_12px_5px_12px] sm:rounded-[5px_16px_5px_16px] font-bold text-xs sm:text-base border-[1.5px] border-[#241F18] shadow-[2.5px_2.5px_0_#241F18] sm:shadow-[4px_4px_0_#241F18] hover:bg-[#8F371C] transition-all cursor-pointer touch-manipulation text-center"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#B14B2C] text-white px-5 sm:px-5 py-3 rounded-[5px_12px_5px_12px] sm:rounded-[5px_16px_5px_16px] font-bold text-xs sm:text-base border-[1.5px] border-[#241F18] shadow-[2.5px_2.5px_0_#241F18] sm:shadow-[4px_4px_0_#241F18] hover:bg-[#8F371C] transition-all cursor-pointer touch-manipulation text-center min-h-[48px]"
               title="Open Khurshid General Store Location on Google Maps"
             >
-              <MapPin className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-white shrink-0" />
+              <MapPin aria-hidden="true" className="w-4 h-4 text-white shrink-0" />
               <span>📍 View on Maps</span>
             </a>
           </div>
@@ -75,28 +76,28 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           <div className="pt-1 flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono w-full">
             <a 
               href={`tel:${cleanPhoneNumber(settings.phone1)}`}
-              className="inline-flex items-center gap-1 bg-white px-2.5 py-1.5 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] font-bold text-[#152A1C] hover:bg-[#F1EAD9] touch-manipulation shrink-0"
+              className="inline-flex items-center gap-1.5 bg-white px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] font-bold text-[#152A1C] hover:bg-[#F1EAD9] touch-manipulation shrink-0 min-h-[44px]"
             >
-              <PhoneCall className="w-3 h-3 text-[#2B4430]" />
+              <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#2B4430]" />
               <span>📞 {settings.phone1}</span>
             </a>
 
             <a 
-              href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`}
-              target="_blank"
+              href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`} 
+              target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 bg-[#25D366] text-[#0e3d1e] px-2.5 py-1.5 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] font-bold touch-manipulation shrink-0"
+              className="inline-flex items-center gap-1.5 bg-[#25D366] text-[#0e3d1e] px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] font-bold touch-manipulation shrink-0 min-h-[44px]"
             >
-              <MessageCircle className="w-3 h-3" />
+              <MessageCircle aria-hidden="true" className="w-3.5 h-3.5" />
               <span>WhatsApp Helpline</span>
             </a>
 
             {settings.phone2 && (
               <a 
                 href={`tel:${cleanPhoneNumber(settings.phone2)}`}
-                className="inline-flex items-center gap-1 bg-white px-2.5 py-1.5 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_rgba(36,31,24,0.15)] font-bold text-[#152A1C] hover:bg-[#F1EAD9] touch-manipulation shrink-0"
+                className="inline-flex items-center gap-1.5 bg-white px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_rgba(36,31,24,0.15)] font-bold text-[#152A1C] hover:bg-[#F1EAD9] touch-manipulation shrink-0 min-h-[44px]"
               >
-                <PhoneCall className="w-3 h-3 text-[#C68A2E]" />
+                <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#C68A2E]" />
                 <span>Alt: {settings.phone2}</span>
               </a>
             )}
@@ -131,13 +132,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <div className="w-full max-w-[240px] bg-white text-[#241F18] rounded-[5px_12px_5px_12px] p-2 sm:p-3.5 my-2 sm:my-3 border-[1.5px] border-[#241F18] shadow-[2px_2px_0_rgba(0,0,0,0.3)]">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-[#2B4430] text-white flex items-center justify-center font-bold shrink-0">
-                  <Store className="w-4 h-4 sm:w-6 sm:h-6" />
+                  <Store aria-hidden="true" className="w-4 h-4 sm:w-6 sm:h-6" />
                 </div>
                 <div className="min-w-0">
                   <div className="font-display font-black text-[11px] sm:text-sm text-[#152A1C] leading-tight uppercase truncate">
                     {settings.storeName}
                   </div>
-                  <div className="text-[8px] sm:text-[10px] font-bold text-[#55642F] uppercase tracking-wider truncate">
+                  <div className="text-[8px] sm:text-[10px] font-bold text-[#3D521F] uppercase tracking-wider truncate">
                     ★ General Kirana & Ration ★
                   </div>
                 </div>
@@ -152,21 +153,21 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <div className="space-y-1 sm:space-y-2 text-[11px] sm:text-xs font-mono border-t border-dashed border-white/30 pt-2 sm:pt-3">
               <div className="flex justify-between items-center text-[#F1EAD9] gap-1">
                 <span className="shrink-0">Mon – Sat:</span>
-                <span className="font-bold text-[#C68A2E] text-right truncate">6:00 AM – 9:00 PM</span>
+                <span className="font-bold text-[#E2A33A] text-right truncate">6:00 AM – 9:00 PM</span>
               </div>
               <div className="flex justify-between items-center text-[#F1EAD9] gap-1">
                 <span className="shrink-0">Sunday:</span>
-                <span className="font-bold text-[#C68A2E] text-right truncate">6:00 AM – 9:00 PM</span>
+                <span className="font-bold text-[#E2A33A] text-right truncate">6:00 AM – 9:00 PM</span>
               </div>
             </div>
 
             {/* Direct Helpline Buttons */}
-            <div className="mt-2.5 pt-2 sm:pt-3 border-t border-dashed border-white/30 grid grid-cols-2 gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+            <div className="mt-2.5 pt-2 sm:pt-3 border-t border-dashed border-white/30 grid grid-cols-2 gap-2 text-[11px] sm:text-xs">
               <a
                 href={`tel:${cleanPhoneNumber(settings.phone1)}`}
-                className="flex items-center justify-center gap-1 bg-[#F1EAD9] text-[#152A1C] py-1.5 sm:py-2 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-white transition-colors touch-manipulation text-center"
+                className="flex items-center justify-center gap-1.5 bg-[#F1EAD9] text-[#152A1C] py-2.5 sm:py-2.5 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-white transition-colors touch-manipulation text-center min-h-[44px]"
               >
-                <PhoneCall className="w-3 h-3 text-[#2B4430] shrink-0" />
+                <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#2B4430] shrink-0" />
                 <span>Call Store</span>
               </a>
 
@@ -174,9 +175,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1 bg-[#25D366] text-[#0e3d1e] py-1.5 sm:py-2 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-[#20ba59] transition-colors touch-manipulation text-center"
+                className="flex items-center justify-center gap-1.5 bg-[#25D366] text-[#0e3d1e] py-2.5 sm:py-2.5 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-[#20ba59] transition-colors touch-manipulation text-center min-h-[44px]"
               >
-                <MessageCircle className="w-3 h-3 shrink-0" />
+                <MessageCircle aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
                 <span>WhatsApp</span>
               </a>
             </div>
@@ -187,19 +188,20 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[10px] sm:text-[11px] text-[#F1EAD9] hover:text-[#C68A2E] flex items-center justify-between gap-1 bg-black/20 px-2 py-1.5 rounded-lg border border-white/10 hover:border-[#C68A2E] transition-all group w-full overflow-hidden"
+                aria-label="Open Khurshid General Store location in Google Maps"
+                className="text-[11px] text-[#F1EAD9] hover:text-[#E2A33A] flex items-center justify-between gap-1 bg-black/30 px-2.5 py-2 rounded-lg border border-white/15 hover:border-[#E2A33A] transition-all group w-full overflow-hidden min-h-[44px]"
                 title="Open location in Google Maps"
               >
-                <div className="flex items-center gap-1 min-w-0 flex-1 truncate">
-                  <MapPin className="w-3 h-3 text-[#C68A2E] shrink-0" />
+                <div className="flex items-center gap-1.5 min-w-0 flex-1 truncate">
+                  <MapPin aria-hidden="true" className="w-3.5 h-3.5 text-[#E2A33A] shrink-0" />
                   <span className="truncate">{settings.address}</span>
                 </div>
-                <span className="text-[9px] sm:text-[10px] font-mono underline text-[#C68A2E] shrink-0 font-bold ml-1">Maps ↗</span>
+                <span className="text-[10px] font-mono underline text-[#E2A33A] shrink-0 font-bold ml-1">Maps ↗</span>
               </a>
 
-              <div className="flex flex-wrap items-center justify-between gap-1 text-[9px] sm:text-[10px] font-mono text-[#DCE6DF] bg-[#152A1C]/60 px-2 py-1 rounded w-full">
+              <div className="flex flex-wrap items-center justify-between gap-1 text-[10px] font-mono text-[#DCE6DF] bg-[#152A1C]/80 px-2.5 py-1.5 rounded w-full border border-white/10">
                 <span>🛵 Delivery Charge:</span>
-                <span className="font-bold text-[#C68A2E]">₹{settings.deliveryFee ?? 10} (Within {settings.deliveryRadiusKm ?? 1} KM)</span>
+                <span className="font-bold text-[#E2A33A]">₹{settings.deliveryFee ?? 10} (Within {settings.deliveryRadiusKm ?? 1} KM)</span>
               </div>
             </div>
 

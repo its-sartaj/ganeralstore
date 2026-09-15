@@ -37,6 +37,53 @@
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="34d921ecbba278cf" />
 
+    <!-- Preconnect hints for fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload critical production stylesheet -->
+    <link rel="preload" href="./assets/index.css?v=20260916_perf1" as="style" />
+    <link rel="stylesheet" href="./assets/index.css?v=20260916_perf1" />
+
+    <!-- Asynchronous Non-Blocking Google Fonts with font-display: swap -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;600;700&display=swap" />
+    </noscript>
+
+    <!-- Critical Above-The-Fold Inline CSS (Zero layout shift, instant paint) -->
+    <style>
+      :root {
+        --paper: #F1EAD9;
+        --paper-line: #DCD0B4;
+        --ink: #241F18;
+        --ink-soft: #4E4639;
+        --pine: #2B4430;
+        --pine-dark: #152A1C;
+        --moss: #55642F;
+        --rust: #B14B2C;
+        --gold: #C68A2E;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #F1EAD9;
+        color: #241F18;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .font-display {
+        font-family: 'Space Grotesk', system-ui, sans-serif;
+      }
+      .awning-stripe {
+        height: 9px;
+        background: repeating-linear-gradient(45deg, #2B4430 0 9px, #F1EAD9 9px 18px);
+        border-top: 1.5px solid #241F18;
+        border-bottom: 1.5px solid #241F18;
+      }
+    </style>
+
     <!-- Structured Data Schema (JSON-LD) for Google Rich Snippets & Local Ranking -->
     <script type="application/ld+json">
     {
@@ -71,28 +118,64 @@
       ]
     }
     </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="./assets/index.css?v=20260909_3">
   </head>
   <body class="bg-[#F1EAD9] text-[#241F18] font-sans antialiased selection:bg-[#2B4430] selection:text-[#F1EAD9]">
-    <!-- Accessible Search Engine Content for Instant Crawling -->
-    <noscript>
-      <div style="padding: 24px; font-family: sans-serif; max-width: 800px; margin: 0 auto; line-height: 1.6;">
-        <h1>Khurshid General Store — Roz ka Saaman, Ghar Tak</h1>
-        <h2>खुरशीद जनरल स्टोर — Phenhara, Bihar</h2>
-        <p><strong>Address:</strong> Rupaulia Birta Road, Near me Birta Masjid, Word No. 11, Phenhara, Bihar - 845430</p>
-        <p><strong>Helpline Numbers:</strong> 9162288060 / 8587079786</p>
-        <p>Khurshid General Store provides fresh groceries, atta, pulses, edible oils, spices, tea, snacks, household detergents, and computerized billing receipts with WhatsApp ordering and local home delivery in Phenhara.</p>
-      </div>
-    </noscript>
+    <!-- Instant Pre-Rendered Above-the-Fold Shell (Replaced instantly on React mount) -->
+    <div id="root">
+      <header class="sticky top-0 z-40 bg-[#F1EAD9] border-b-[1.5px] border-[#241F18] shadow-xs">
+        <div class="bg-[#152A1C] text-[#DCE6DF] text-xs py-1.5 px-3 border-b border-[#241F18]">
+          <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 font-medium truncate">
+              <span class="w-2 h-2 rounded-full bg-[#55642F] shrink-0" aria-hidden="true"></span>
+              <span class="truncate">🏪 Shuddh, Taaza aur Sasta Saman — Aapke Ghar Tak |</span>
+              <span class="bg-[#FFE082]/20 text-[#FFE082] border border-[#FFE082]/40 px-2 py-0.5 rounded-full font-bold text-[11px] shrink-0">
+                🛵 Delivery: Within 1 KM (₹10)
+              </span>
+            </div>
+            <div class="flex items-center gap-3 text-xs shrink-0 font-mono">
+              <a href="tel:9162288060" class="text-[#F1EAD9] py-1 px-1.5 min-h-[44px] inline-flex items-center" aria-label="Call store at 9162288060">📞 9162288060</a>
+            </div>
+          </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 bg-white rounded-[3px_11px_3px_11px] p-1 border-[1.5px] border-[#241F18] flex items-center justify-center font-bold text-xl">
+              🏪
+            </div>
+            <div>
+              <div class="font-display font-bold text-base sm:text-xl text-[#152A1C]">Khurshid General Store</div>
+              <div class="text-xs text-[#4E4639]">Shuddh, Taaza aur Sasta Saman</div>
+            </div>
+          </div>
+          <button type="button" class="bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] px-4 py-2 rounded-[4px_12px_4px_12px] font-bold text-xs sm:text-sm shadow-[2px_2px_0_#241F18] min-h-[44px] flex items-center gap-2">
+            <span aria-hidden="true">🧺</span>
+            <span>Cart (0)</span>
+          </button>
+        </div>
+        <div class="awning-stripe"></div>
+      </header>
 
-    <div id="root"></div>
-    <script defer src="./assets/index.js?v=20260909_3"></script>
-    <!-- Cloud Sync: bridges localStorage <-> Firebase Realtime Database -->
-    <script defer src="./assets/firebase-sync.js?v=20260909_3"></script>
+      <main id="main-content">
+        <section class="max-w-7xl mx-auto px-3 sm:px-6 pt-4 sm:pt-8 pb-6 w-full">
+          <div class="space-y-4 max-w-2xl">
+            <div class="inline-flex items-center gap-1.5 bg-white text-[#152A1C] px-3 py-1.5 rounded-full text-xs font-bold border-[1.5px] border-dashed border-[#4E4639]">
+              <span class="w-2 h-2 rounded-full bg-[#55642F]" aria-hidden="true"></span>
+              <span>Open Now · Same-Day Delivery</span>
+            </div>
+            <h1 class="font-display text-2xl sm:text-4xl lg:text-5xl font-bold text-[#152A1C] leading-tight tracking-tight">
+              Ration se lekar <em class="not-italic text-[#B14B2C] underline decoration-[#C68A2E] decoration-wavy">rozmarra</em> tak, sab kuch yahin.
+            </h1>
+            <p class="text-sm sm:text-base text-[#4E4639] leading-relaxed">
+              Grocery, dairy, snacks aur ghar ki zaroorat ka har saamaan — dukaan se 1 km ke daayre mein superfast home delivery.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Production Optimized Application Bundle (Deferred, Non-blocking) -->
+    <script defer src="./assets/index.js?v=20260916_perf1"></script>
+    <!-- Cloud Sync Layer -->
+    <script defer src="./assets/firebase-sync.js?v=20260916_perf1"></script>
   </body>
 </html>

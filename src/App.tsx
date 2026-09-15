@@ -14,9 +14,11 @@ import { Navbar } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { ProductCard } from './components/ProductCard';
 import { CartDrawer } from './components/CartDrawer';
-import { BillModal } from './components/BillModal';
-import { AdminPanel } from './components/AdminPanel';
 import { Footer } from './components/Footer';
+
+// Code-split heavy modals to ensure customer storefront bundle is ultra-lightweight
+const BillModal = React.lazy(() => import('./components/BillModal').then(m => ({ default: m.BillModal })));
+const AdminPanel = React.lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
 
 export default function App() {
   // 1. Persistent State Initialization
@@ -450,13 +452,15 @@ export default function App() {
         onSearchChange={setSearchTerm}
       />
 
-      {/* 2. Hero Banner */}
-      <HeroBanner
-        settings={settings}
-        onScrollToProducts={() => {
-          document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
-        }}
-      />
+      {/* Main Landmark */}
+      <main id="main-content" className="flex-1">
+        {/* 2. Hero Banner */}
+        <HeroBanner
+          settings={settings}
+          onScrollToProducts={() => {
+            document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
 
       {/* 3. Categories Strip */}
       <section id="categories" className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4 w-full overflow-hidden">
@@ -471,23 +475,25 @@ export default function App() {
           </div>
 
           {/* Left / Right Quick Scroll Navigation Arrows */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-[10px] text-[#6B6152] font-mono sm:hidden">Swipe →</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[11px] text-[#4E4639] font-mono sm:hidden">Swipe →</span>
             <button
+              type="button"
               onClick={() => scrollCategories('left')}
-              className="w-7 h-7 rounded-full bg-white hover:bg-[#F1EAD9] text-[#241F18] border border-[#241F18] flex items-center justify-center shadow-xs cursor-pointer active:scale-95 transition-transform"
+              className="w-9 h-9 sm:w-10 sm:h-10 min-w-[36px] min-h-[36px] rounded-full bg-white hover:bg-[#F1EAD9] text-[#241F18] border border-[#241F18] flex items-center justify-center shadow-xs cursor-pointer active:scale-95 transition-transform touch-manipulation"
               title="Previous Category"
               aria-label="Previous Category"
             >
-              <ChevronLeft className="w-3.5 h-3.5" />
+              <ChevronLeft aria-hidden="true" className="w-4 h-4" />
             </button>
             <button
+              type="button"
               onClick={() => scrollCategories('right')}
-              className="w-7 h-7 rounded-full bg-white hover:bg-[#F1EAD9] text-[#241F18] border border-[#241F18] flex items-center justify-center shadow-xs cursor-pointer active:scale-95 transition-transform"
+              className="w-9 h-9 sm:w-10 sm:h-10 min-w-[36px] min-h-[36px] rounded-full bg-white hover:bg-[#F1EAD9] text-[#241F18] border border-[#241F18] flex items-center justify-center shadow-xs cursor-pointer active:scale-95 transition-transform touch-manipulation"
               title="Next Category"
               aria-label="Next Category"
             >
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ChevronRight aria-hidden="true" className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -618,10 +624,10 @@ export default function App() {
                 <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-[#C68A2E]" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-display text-base xs:text-lg sm:text-2xl font-bold text-[#152A1C] leading-snug">
+                <h2 className="font-display text-base xs:text-lg sm:text-2xl font-bold text-[#152A1C] leading-snug">
                   Dukaan ka Pata & Delivery Area (दुकान का पता)
-                </h3>
-                <p className="text-[11px] sm:text-sm text-[#6B6152] font-hand">
+                </h2>
+                <p className="text-[11px] sm:text-sm text-[#4E4639] font-hand">
                   Khurshid General Store · Same-day Kirana Delivery
                 </p>
               </div>
@@ -640,11 +646,11 @@ export default function App() {
             {/* Left: Location Details */}
             <div className="md:col-span-7 space-y-3 sm:space-y-4">
               <div className="space-y-1">
-                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#C68A2E]">Address / दुकान का पता:</span>
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#523306]">Address / दुकान का पता:</span>
                 <p className="font-display font-bold text-base sm:text-lg text-[#152A1C] leading-snug break-words">
                   {settings.address}
                 </p>
-                <p className="text-xs sm:text-sm text-[#6B6152] font-medium">
+                <p className="text-xs sm:text-sm text-[#4E4639] font-medium">
                   {settings.cityState}
                 </p>
               </div>
@@ -652,10 +658,10 @@ export default function App() {
               {/* Delivery Boundary Notice Card */}
               <div className="bg-[#F1EAD9]/80 rounded-xl p-3.5 sm:p-4 border border-[#241F18] space-y-1.5">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#152A1C]">
-                  <Truck className="w-4 h-4 text-[#2B4430] shrink-0" />
+                  <Truck aria-hidden="true" className="w-4 h-4 text-[#2B4430] shrink-0" />
                   <span>1 KM Delivery Radius Policy (होम डिलीवरी नियम):</span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-[#6B6152] leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-[#4E4639] leading-relaxed">
                   Humari dukaan se <strong>1 kilometer ke daayre</strong> ke andar aane wale sabhi gharon tak tez aur taaza ration deliver kiya jata hai. 1 km se bahar ke customers dukaan se counter pickup kar sakte hain ya WhatsApp par sampark kar sakte hain.
                 </p>
               </div>
@@ -666,9 +672,10 @@ export default function App() {
                   href={settings.googleMapsUrl || 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 bg-[#B14B2C] hover:bg-[#8F371C] text-white px-3.5 py-2.5 rounded-[4px_10px_4px_10px] font-bold text-xs sm:text-sm border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all cursor-pointer text-center"
+                  aria-label="Open Khurshid General Store Location on Google Maps"
+                  className="inline-flex items-center justify-center gap-1.5 bg-[#B14B2C] hover:bg-[#8F371C] text-white px-4 py-3 rounded-[4px_10px_4px_10px] font-bold text-xs sm:text-sm border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all cursor-pointer text-center min-h-[48px] touch-manipulation"
                 >
-                  <MapPin className="w-3.5 h-3.5 shrink-0" />
+                  <MapPin aria-hidden="true" className="w-4 h-4 shrink-0" />
                   <span>Open on Google Maps ↗</span>
                 </a>
 
@@ -676,7 +683,8 @@ export default function App() {
                   href={`https://wa.me/91${settings.phone1}?text=${encodeURIComponent('Namaste, main Khurshid General Store ke 1 km delivery area se order karna chahta hoon. Mera location share kar raha hoon.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 bg-[#25D366] text-[#0e3d1e] px-3.5 py-2.5 rounded-[4px_10px_4px_10px] font-bold text-xs sm:text-sm border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#20ba59] transition-all cursor-pointer text-center"
+                  aria-label="Share location on WhatsApp"
+                  className="inline-flex items-center justify-center gap-1.5 bg-[#25D366] text-[#0e3d1e] px-4 py-3 rounded-[4px_10px_4px_10px] font-bold text-xs sm:text-sm border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#20ba59] transition-all cursor-pointer text-center min-h-[48px] touch-manipulation"
                 >
                   <MessageCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>Send Location WhatsApp</span>
@@ -697,23 +705,35 @@ export default function App() {
                   </span>
                 </div>
 
-                <div className="space-y-1.5 text-xs font-mono text-[#DCE6DF]">
-                  <div className="flex justify-between">
+                <div className="space-y-2 text-xs font-mono text-[#DCE6DF]">
+                  <div className="flex justify-between items-center">
                     <span className="text-[#9FB2CE]">Timing:</span>
                     <span className="font-bold text-[#F1EAD9]">6:00 AM – 9:00 PM (Daily)</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-[#9FB2CE]">Delivery Zone:</span>
                     <span className="font-bold text-[#C68A2E]">Within 1 KM Radius</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center pt-1 border-t border-white/10">
                     <span className="text-[#9FB2CE]">Helpline 1:</span>
-                    <a href={`tel:${settings.phone1}`} className="text-white hover:underline">{settings.phone1}</a>
+                    <a 
+                      href={`tel:${cleanPhoneNumber(settings.phone1)}`} 
+                      aria-label={`Call primary store phone ${settings.phone1}`}
+                      className="text-white hover:text-[#C68A2E] py-1 px-2.5 bg-white/10 hover:bg-white/20 rounded-md font-bold min-h-[36px] inline-flex items-center touch-manipulation"
+                    >
+                      {settings.phone1}
+                    </a>
                   </div>
                   {settings.phone2 && (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center pt-1 border-t border-white/10">
                       <span className="text-[#9FB2CE]">Helpline 2:</span>
-                      <a href={`tel:${settings.phone2}`} className="text-white hover:underline">{settings.phone2}</a>
+                      <a 
+                        href={`tel:${cleanPhoneNumber(settings.phone2)}`} 
+                        aria-label={`Call secondary store phone ${settings.phone2}`}
+                        className="text-white hover:text-[#C68A2E] py-1 px-2.5 bg-white/10 hover:bg-white/20 rounded-md font-bold min-h-[36px] inline-flex items-center touch-manipulation"
+                      >
+                        {settings.phone2}
+                      </a>
                     </div>
                   )}
                 </div>
@@ -722,9 +742,10 @@ export default function App() {
                   href={settings.googleMapsUrl || 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full bg-[#C68A2E] text-[#152A1C] hover:bg-white py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors text-center"
+                  aria-label="Click to navigate to Khurshid General Store on Google Maps"
+                  className="w-full bg-[#C68A2E] text-[#152A1C] hover:bg-white py-3 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors text-center min-h-[44px] touch-manipulation"
                 >
-                  <MapPin className="w-3.5 h-3.5 shrink-0" />
+                  <MapPin aria-hidden="true" className="w-4 h-4 shrink-0" />
                   <span>Click to Navigate on Google Maps</span>
                 </a>
               </div>
@@ -732,6 +753,7 @@ export default function App() {
           </div>
         </div>
       </section>
+      </main>
 
       {/* Floating Bottom Sticky Cart Button / WhatsApp FAB */}
       {totalCartCount > 0 && !isCartOpen && !isBillModalOpen && (
