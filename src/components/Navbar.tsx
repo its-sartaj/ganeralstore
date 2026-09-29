@@ -121,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   type="button"
                   onClick={() => onSearchChange('')}
                   aria-label="Clear search input"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#4E4639] hover:text-[#241F18] font-bold px-2 py-1 min-h-[36px] flex items-center justify-center cursor-pointer"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-xs text-[#4E4639] hover:text-[#241F18] font-bold px-2 py-1 min-h-[48px] min-w-[48px] flex items-center justify-center cursor-pointer"
                 >
                   Clear
                 </button>

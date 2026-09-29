@@ -525,9 +525,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <Store className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div className="min-w-0">
-                <h1 className="font-display text-sm sm:text-lg font-bold leading-tight truncate">
+                <h2 className="font-display text-sm sm:text-lg font-bold leading-tight truncate">
                   {settings.storeName} — Admin
-                </h1>
+                </h2>
                 <span className="font-hand text-[10px] sm:text-xs text-[#C68A2E] truncate block">
                   Live Cloud Inventory & Store Controls
                 </span>
@@ -623,9 +623,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="font-display font-bold text-sm sm:text-base text-rose-950">
+                          <h2 className="font-display font-bold text-sm sm:text-base text-rose-950">
                             Low-Stock Alert: {lowStockProducts.length} items require restock!
-                          </h4>
+                          </h2>
                           <span className="bg-rose-200 text-rose-900 border border-rose-300 text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 rounded-full">
                             Threshold: Stock &lt; {lowStockThreshold} units
                           </span>
@@ -697,23 +697,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           type="button"
                           onClick={() => handleQuickThresholdChange(lowStockThreshold - 1)}
                           disabled={lowStockThreshold <= 1}
-                          className="w-6 h-6 rounded bg-white border border-[#241F18] flex items-center justify-center font-bold text-xs hover:bg-[#F1EAD9] disabled:opacity-40 cursor-pointer shadow-2xs"
+                          className="min-w-[48px] min-h-[48px] rounded-lg bg-white border border-[#241F18] flex items-center justify-center font-bold text-sm hover:bg-[#F1EAD9] disabled:opacity-40 cursor-pointer shadow-2xs"
                           title="Decrease threshold"
+                          aria-label="Decrease low-stock alert threshold"
                         >
                           -
                         </button>
-                        <span className="font-mono font-bold text-xs px-2 py-0.5 bg-white border border-[#241F18] rounded text-rose-700 min-w-6 text-center shadow-2xs">
+                        <span className="font-mono font-bold text-xs px-2.5 py-1.5 bg-white border border-[#241F18] rounded text-rose-700 min-w-8 text-center shadow-2xs">
                           {lowStockThreshold}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleQuickThresholdChange(lowStockThreshold + 1)}
-                          className="w-6 h-6 rounded bg-white border border-[#241F18] flex items-center justify-center font-bold text-xs hover:bg-[#F1EAD9] cursor-pointer shadow-2xs"
+                          className="min-w-[48px] min-h-[48px] rounded-lg bg-white border border-[#241F18] flex items-center justify-center font-bold text-sm hover:bg-[#F1EAD9] cursor-pointer shadow-2xs"
                           title="Increase threshold"
+                          aria-label="Increase low-stock alert threshold"
                         >
                           +
                         </button>
-                        <span className="text-[11px] font-mono text-slate-600 ml-0.5">units</span>
+                        <span className="text-[11px] font-mono text-slate-700 ml-0.5">units</span>
                       </div>
                     </div>
                   </div>
@@ -902,6 +904,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     <img
                                       src={p.image || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"}
                                       alt={p.name}
+                                      width="40"
+                                      height="40"
                                       onError={(e) => {
                                         (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
                                       }}
@@ -932,7 +936,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     ) : null}
                                   </div>
                                   {p.hindiName && (
-                                    <div className="text-[11px] text-slate-500 font-sans">
+                                    <div className="text-[11px] text-slate-700 font-sans">
                                       {p.hindiName}
                                     </div>
                                   )}
@@ -951,7 +955,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 </td>
 
                                 {/* MRP */}
-                                <td className="py-2.5 px-3 text-right font-mono text-slate-400 line-through">
+                                <td className="py-2.5 px-3 text-right font-mono text-slate-600 font-medium line-through">
                                   ₹{p.mrp}
                                 </td>
 
@@ -993,26 +997,31 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 <td className="py-2.5 px-3 text-right space-x-1.5 whitespace-nowrap">
                                   {/* Quick Restock Button */}
                                   <button
+                                    type="button"
                                     onClick={() => {
                                       onUpdateProduct({ ...p, stock: p.stock + 10 });
                                       showToast(`Restocked +10 units to "${p.name}" (New stock: ${p.stock + 10}) ✓`);
                                     }}
-                                    className="p-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] cursor-pointer inline-flex items-center gap-1 shadow-2xs"
+                                    className="p-1.5 px-2 min-h-[48px] rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] cursor-pointer inline-flex items-center gap-1 shadow-2xs"
                                     title="Quick Restock: Add +10 units to stock"
+                                    aria-label={`Restock 10 units for ${p.name}`}
                                   >
-                                    <Plus className="w-3 h-3 text-emerald-700" />
+                                    <Plus className="w-3.5 h-3.5 text-emerald-700" />
                                     <span className="font-mono">+10</span>
                                   </button>
 
                                   <button
+                                    type="button"
                                     onClick={() => handleOpenEdit(p)}
-                                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-emerald-100 text-emerald-800 border border-slate-300 font-bold text-xs cursor-pointer inline-flex items-center shadow-2xs"
+                                    className="min-w-[48px] min-h-[48px] rounded-lg bg-slate-100 hover:bg-emerald-100 text-emerald-800 border border-slate-300 font-bold text-xs cursor-pointer inline-flex items-center justify-center shadow-2xs"
                                     title="Edit Product Details & Stock"
+                                    aria-label={`Edit ${p.name}`}
                                   >
-                                    <Edit3 className="w-3.5 h-3.5" />
+                                    <Edit3 className="w-4 h-4" />
                                   </button>
 
                                   <button
+                                    type="button"
                                     onClick={() => {
                                       if (confirm(`Kya aap sach me "${p.name}" ko inventory se delete karna chahte hain?`)) {
                                         onDeleteProduct(p.id);
@@ -1025,10 +1034,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                         showToast(`Product "${p.name}" deleted`);
                                       }
                                     }}
-                                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-rose-700 border border-slate-300 font-bold text-xs cursor-pointer inline-flex items-center shadow-2xs"
+                                    className="min-w-[48px] min-h-[48px] rounded-lg bg-slate-100 hover:bg-rose-100 text-rose-700 border border-slate-300 font-bold text-xs cursor-pointer inline-flex items-center justify-center shadow-2xs"
                                     title="Delete Product"
+                                    aria-label={`Delete ${p.name}`}
                                   >
-                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <Trash2 className="w-4 h-4" />
                                   </button>
                                 </td>
                               </tr>
@@ -1105,6 +1115,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               <img 
                                 src={p.image || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"} 
                                 alt={p.name} 
+                                width="48"
+                                height="48"
                                 onError={(e) => {
                                   (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
                                 }}
@@ -1120,7 +1132,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               <div className="font-bold text-xs text-slate-900 truncate">{p.name}</div>
                               <div className="flex items-center justify-center gap-1">
                                 <span className="font-mono text-xs font-extrabold text-[#2B4430]">₹{p.price}</span>
-                                <span className="text-[10px] text-slate-500 font-mono">({p.stock})</span>
+                                <span className="text-[10px] text-[#4E4639] font-mono font-medium">({p.stock})</span>
                               </div>
                             </div>
                           </div>
@@ -1174,22 +1186,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             <div key={id} className="flex items-center justify-between text-xs bg-[#F1EAD9]/50 p-2 rounded border border-[#241F18]">
                               <div className="flex-1 truncate mr-2">
                                 <div className="font-bold text-slate-900 truncate">{p.name}</div>
-                                <div className="text-[10px] text-slate-500 font-mono">₹{p.price} x {qty} = ₹{p.price * qty}</div>
+                                <div className="text-[10px] text-[#4E4639] font-mono font-medium">₹{p.price} x {qty} = ₹{p.price * qty}</div>
                               </div>
                               <div className="flex items-center gap-1.5">
                                 <button
+                                  type="button"
                                   onClick={() => setPosCart(prev => {
                                     const copy = { ...prev };
                                     if (copy[id] <= 1) delete copy[id];
                                     else copy[id] -= 1;
                                     return copy;
                                   })}
-                                  className="w-5 h-5 bg-white border border-[#241F18] rounded flex items-center justify-center font-bold cursor-pointer"
+                                  aria-label={`Decrease quantity of ${p.name}`}
+                                  className="min-w-[48px] min-h-[48px] bg-white border border-[#241F18] rounded flex items-center justify-center font-bold text-base cursor-pointer"
                                 >
                                   −
                                 </button>
-                                <span className="w-5 text-center font-mono font-bold">{qty}</span>
+                                <span className="w-6 text-center font-mono font-bold text-xs">{qty}</span>
                                 <button
+                                  type="button"
                                   onClick={() => {
                                     if (p && qty >= p.stock) {
                                       showToast(`⚠️ "${p.name}" ka kewal ${p.stock} units available hai!`);
@@ -1197,7 +1212,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     }
                                     setPosCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
                                   }}
-                                  className="w-5 h-5 bg-white border border-[#241F18] rounded flex items-center justify-center font-bold cursor-pointer"
+                                  aria-label={`Increase quantity of ${p.name}`}
+                                  className="min-w-[48px] min-h-[48px] bg-white border border-[#241F18] rounded flex items-center justify-center font-bold text-base cursor-pointer"
                                 >
                                   +
                                 </button>
@@ -1310,25 +1326,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             <td className="py-2.5 px-3 text-right">
                               <div className="inline-flex items-center gap-1.5 justify-end">
                                 <button
+                                  type="button"
                                   onClick={() => onViewInvoice(inv)}
-                                  className="inline-flex items-center gap-1 bg-[#F1EAD9] hover:bg-[#2B4430] hover:text-white px-2.5 py-1 rounded border border-[#241F18] font-bold text-xs cursor-pointer transition-colors"
+                                  className="inline-flex items-center gap-1.5 bg-[#F1EAD9] hover:bg-[#2B4430] hover:text-white px-3 py-1.5 min-h-[48px] rounded border border-[#241F18] font-bold text-xs cursor-pointer transition-colors"
                                   title="View and Print Invoice"
+                                  aria-label={`View and print invoice ${inv.invoiceNumber}`}
                                 >
-                                  <Eye className="w-3.5 h-3.5" />
+                                  <Eye className="w-4 h-4" />
                                   <span>View / Print</span>
                                 </button>
                                 {onDeleteInvoice && (
                                   <button
+                                    type="button"
                                     onClick={() => {
                                       if (confirm(`Kya aap Invoice ${inv.invoiceNumber} ko delete karna chahte hain?`)) {
                                         onDeleteInvoice(inv.id);
                                         showToast(`🗑️ Invoice ${inv.invoiceNumber} delete ho gaya.`);
                                       }
                                     }}
-                                    className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded border border-transparent hover:border-rose-300 transition-colors cursor-pointer"
+                                    className="min-w-[48px] min-h-[48px] flex items-center justify-center text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded border border-transparent hover:border-rose-300 transition-colors cursor-pointer"
                                     title="Delete invoice record"
+                                    aria-label={`Delete invoice ${inv.invoiceNumber}`}
                                   >
-                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <Trash2 className="w-4 h-4" />
                                   </button>
                                 )}
                               </div>
@@ -1580,8 +1600,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 {editingProduct ? 'Edit Product Details' : '+ Add New Item to Store'}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsProductModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-[#241F18] flex items-center justify-center font-bold cursor-pointer hover:bg-slate-100"
+                aria-label="Close product modal"
+                className="min-w-[48px] min-h-[48px] rounded-full border border-[#241F18] flex items-center justify-center font-bold cursor-pointer hover:bg-slate-100"
               >
                 ✕
               </button>
@@ -1725,7 +1747,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <div className="flex items-center gap-3">
                   <img
                     src={productForm.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80'}
-                    alt="Preview"
+                    alt="Product image preview"
+                    width="64"
+                    height="64"
                     className="w-16 h-16 rounded-full object-contain bg-[#F1EAD9] border border-[#241F18] p-1 shrink-0"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80';

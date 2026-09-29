@@ -108,7 +108,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <button
                 type="button"
                 onClick={() => onUpdateQuantity(product.id, quantity - 1)}
-                className="min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center font-bold text-sm sm:text-base text-[#2B4430] hover:bg-[#DCD0B4] transition-colors touch-manipulation cursor-pointer"
+                className="min-w-[48px] min-h-[48px] flex items-center justify-center font-bold text-base text-[#2B4430] hover:bg-[#DCD0B4] transition-colors touch-manipulation cursor-pointer"
                 title="Decrease"
                 aria-label={`Decrease quantity of ${product.name}`}
               >
@@ -124,7 +124,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 type="button"
                 disabled={isMaxStockReached}
                 onClick={() => onUpdateQuantity(product.id, Math.min(product.stock, quantity + 1))}
-                className={`min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center font-bold text-sm sm:text-base transition-colors touch-manipulation ${
+                className={`min-w-[48px] min-h-[48px] flex items-center justify-center font-bold text-base transition-colors touch-manipulation ${
                   isMaxStockReached
                     ? 'text-slate-300 bg-slate-100 cursor-not-allowed'
                     : 'text-[#2B4430] hover:bg-[#DCD0B4] cursor-pointer'

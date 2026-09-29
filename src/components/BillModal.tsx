@@ -160,11 +160,13 @@ export const BillModal: React.FC<BillModalProps> = ({
           <div className="flex items-center gap-2">
             {step === 'invoice' && !initialInvoice && (
               <button
+                type="button"
                 onClick={() => setStep('details')}
-                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-200 transition-colors mr-1"
+                className="min-w-[48px] min-h-[48px] flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-200 transition-colors mr-1 cursor-pointer"
                 title="Back to details"
+                aria-label="Back to details"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-5 h-5" />
               </button>
             )}
             <Receipt className="w-5 h-5 text-emerald-600" />
@@ -179,8 +181,10 @@ export const BillModal: React.FC<BillModalProps> = ({
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
+            aria-label="Close modal"
+            className="min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -406,30 +410,33 @@ export const BillModal: React.FC<BillModalProps> = ({
                   <div className="flex items-center gap-2 flex-wrap">
                     {/* Print Button */}
                     <button
+                      type="button"
                       onClick={handlePrint}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold border border-slate-300 shadow-2xs cursor-pointer transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 min-h-[48px] rounded-lg bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold border border-slate-300 shadow-2xs cursor-pointer transition-colors"
                       title="Print Official Bill"
                     >
-                      <Printer className="w-3.5 h-3.5 text-emerald-600" />
+                      <Printer className="w-4 h-4 text-emerald-600" />
                       <span>Print Bill (प्रिंट)</span>
                     </button>
 
                     {/* WhatsApp Bill Share */}
                     <button
+                      type="button"
                       onClick={handleWhatsAppShare}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs cursor-pointer transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 min-h-[48px] rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs cursor-pointer transition-colors"
                       title="Share Bill via WhatsApp"
                     >
-                      <MessageCircle className="w-3.5 h-3.5" />
+                      <MessageCircle className="w-4 h-4" />
                       <span>WhatsApp Bill</span>
                     </button>
 
                     {/* UPI QR Code Trigger */}
                     <button
+                      type="button"
                       onClick={() => setShowQrModal(!showQrModal)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-2xs cursor-pointer transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 min-h-[48px] rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-2xs cursor-pointer transition-colors"
                     >
-                      <QrCode className="w-3.5 h-3.5" />
+                      <QrCode className="w-4 h-4" />
                       <span>UPI QR Pay</span>
                     </button>
                   </div>
@@ -440,7 +447,7 @@ export const BillModal: React.FC<BillModalProps> = ({
                   <div className="no-print p-4 rounded-2xl bg-gradient-to-r from-emerald-900 to-teal-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 border border-emerald-700">
                     <div className="space-y-1 text-center sm:text-left">
                       <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">Instant UPI Payment</span>
-                      <h4 className="font-bold text-base">Scan to Pay {formatCurrency(invoice.totalAmount)}</h4>
+                      <h3 className="font-bold text-base">Scan to Pay {formatCurrency(invoice.totalAmount)}</h3>
                       <p className="text-xs text-slate-300">Google Pay, PhonePe, Paytm, BHIM</p>
                       <div className="font-mono text-xs bg-black/30 px-2 py-1 rounded inline-block text-emerald-200 mt-1">
                         UPI ID: {settings.upiId}
@@ -453,6 +460,8 @@ export const BillModal: React.FC<BillModalProps> = ({
                           `upi://pay?pa=${settings.upiId}&pn=${encodeURIComponent(settings.storeName)}&am=${invoice.totalAmount}&cu=INR`
                         )}`}
                         alt="UPI Payment QR Code"
+                        width="112"
+                        height="112"
                         className="w-28 h-28 object-contain rounded-lg border border-slate-200"
                         onError={(e) => {
                           // Fallback to SVG placeholder if offline
@@ -477,9 +486,9 @@ export const BillModal: React.FC<BillModalProps> = ({
                         <div className="inline-block bg-slate-900 text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded tracking-widest mb-1">
                           RETAIL CASH MEMO / TAX INVOICE
                         </div>
-                        <h1 className="font-display text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+                        <h2 className="font-display text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
                           {settings.storeName.toUpperCase()}
-                        </h1>
+                        </h2>
                         <p className="text-xs text-slate-600 font-medium max-w-md">
                           {settings.address}, {settings.cityState}
                         </p>
@@ -545,7 +554,7 @@ export const BillModal: React.FC<BillModalProps> = ({
                               {item.name}
                             </td>
                             <td className="py-2 px-2 text-center text-slate-600 font-mono">{item.unit}</td>
-                            <td className="py-2 px-2 text-right text-slate-400 font-mono line-through">₹{item.mrp}</td>
+                            <td className="py-2 px-2 text-right text-slate-600 font-mono line-through">₹{item.mrp}</td>
                             <td className="py-2 px-2 text-right font-mono text-slate-800">₹{item.rate}</td>
                             <td className="py-2 px-2 text-center font-bold text-slate-900 font-mono">{item.quantity}</td>
                             <td className="py-2 px-3 text-right font-bold text-slate-950 font-mono">₹{item.amount}</td>
@@ -575,11 +584,11 @@ export const BillModal: React.FC<BillModalProps> = ({
 
                       <div className="pt-2 flex items-center justify-between text-xs">
                         <div>
-                          <div className="text-slate-400 text-[10px]">Cashier / Billed By</div>
+                          <div className="text-slate-600 text-[10px] font-medium">Cashier / Billed By</div>
                           <div className="font-bold text-slate-700">Khurshid Store Staff</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-slate-400 text-[10px]">Authorized Signatory</div>
+                          <div className="text-slate-600 text-[10px] font-medium">Authorized Signatory</div>
                           <div className="font-bold text-slate-800 font-display">For Khurshid General Store</div>
                         </div>
                       </div>

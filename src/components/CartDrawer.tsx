@@ -63,9 +63,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           {/* Drawer Head */}
           <div className="p-5 border-b-[1.5px] border-dashed border-[#6B6152] flex items-center justify-between bg-white/70">
             <div>
-              <h3 className="font-display text-xl font-bold text-[#152A1C]">
+              <h2 className="font-display text-xl font-bold text-[#152A1C]">
                 Your Cart (सामान की टोकरी)
-              </h3>
+              </h2>
               <p className="font-hand text-xs text-[#6B6152]">
                 {items.length} {items.length === 1 ? 'item' : 'items'} in your list
               </p>
@@ -127,7 +127,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   type="button"
                   onClick={onClose}
                   aria-label="Start shopping groceries now"
-                  className="mt-2 bg-[#2B4430] text-[#F1EAD9] px-5 py-2.5 rounded-[4px_12px_4px_12px] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] min-h-[44px] cursor-pointer"
+                  className="mt-2 bg-[#2B4430] text-[#F1EAD9] px-5 py-2.5 rounded-[4px_12px_4px_12px] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] min-h-[48px] inline-flex items-center justify-center cursor-pointer"
                 >
                   Shop Now (दुकान देखें)
                 </button>
@@ -143,6 +143,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     <img 
                       src={item.product.image || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"} 
                       alt={item.product.name} 
+                      width="48"
+                      height="48"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
                       }}
@@ -170,7 +172,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         type="button"
                         onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
                         aria-label={`Decrease quantity of ${item.product.name}`}
-                        className="min-w-[36px] min-h-[36px] flex items-center justify-center font-bold text-sm text-[#2B4430] hover:bg-[#F1EAD9] cursor-pointer touch-manipulation"
+                        className="min-w-[48px] min-h-[48px] flex items-center justify-center font-bold text-base text-[#2B4430] hover:bg-[#F1EAD9] cursor-pointer touch-manipulation"
                         title="Decrease"
                       >
                         −
@@ -186,7 +188,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         disabled={item.quantity >= item.product.stock}
                         onClick={() => onUpdateQuantity(item.product.id, Math.min(item.product.stock, item.quantity + 1))}
                         aria-label={`Increase quantity of ${item.product.name}`}
-                        className={`min-w-[36px] min-h-[36px] flex items-center justify-center font-bold text-sm touch-manipulation ${
+                        className={`min-w-[48px] min-h-[48px] flex items-center justify-center font-bold text-base touch-manipulation ${
                           item.quantity >= item.product.stock
                             ? 'text-slate-300 bg-slate-100 cursor-not-allowed'
                             : 'text-[#2B4430] hover:bg-[#F1EAD9] cursor-pointer'
@@ -201,7 +203,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       type="button"
                       onClick={() => onRemoveItem(item.product.id)}
                       aria-label={`Remove ${item.product.name} from cart`}
-                      className="text-xs font-bold text-[#B14B2C] hover:underline min-h-[36px] px-1 py-1 cursor-pointer flex items-center justify-center"
+                      className="text-xs font-bold text-[#B14B2C] hover:underline min-h-[48px] px-2 py-1 cursor-pointer flex items-center justify-center"
                     >
                       Remove
                     </button>

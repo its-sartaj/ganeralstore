@@ -50,7 +50,7 @@ export const Footer: React.FC<FooterProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="View Khurshid General Store Location on Google Maps"
-                className="inline-flex items-center gap-1.5 bg-[#B14B2C] hover:bg-[#8F371C] text-white text-xs font-bold px-3 py-2 rounded-lg border border-[#241F18] shadow-xs transition-colors min-h-[44px]"
+                className="inline-flex items-center gap-1.5 bg-[#B14B2C] hover:bg-[#8F371C] text-white text-xs font-bold px-3 py-2 rounded-lg border border-[#241F18] shadow-xs transition-colors min-h-[48px]"
                 title="View Khurshid General Store on Google Maps"
               >
                 <MapPin aria-hidden="true" className="w-4 h-4" />
@@ -135,7 +135,7 @@ export const Footer: React.FC<FooterProps> = ({
               type="button"
               onClick={onOpenAdmin}
               aria-label="Shop owner and staff login"
-              className="opacity-40 hover:opacity-100 transition-opacity text-[11px] text-white/70 hover:text-[#C68A2E] flex items-center gap-1.5 cursor-pointer min-h-[44px] px-2"
+              className="text-xs text-[#DCE6DF] hover:text-[#FFE082] flex items-center gap-1.5 cursor-pointer min-h-[48px] px-3 transition-colors"
               title="Shop Owner Login (#admin)"
             >
               <Lock aria-hidden="true" className="w-3 h-3" />

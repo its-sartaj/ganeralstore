@@ -481,20 +481,20 @@ export default function App() {
             <button
               type="button"
               onClick={() => scrollCategories('left')}
-              className="w-9 h-9 sm:w-10 sm:h-10 min-w-[36px] min-h-[36px] rounded-full bg-white hover:bg-[#F1EAD9] text-[#241F18] border border-[#241F18] flex items-center justify-center shadow-xs cursor-pointer active:scale-95 transition-transform touch-manipulation"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-white hover:bg-[#F1EAD9] text-[#241F18] border border-[#241F18] flex items-center justify-center shadow-xs cursor-pointer active:scale-95 transition-transform touch-manipulation"
               title="Previous Category"
               aria-label="Previous Category"
             >
-              <ChevronLeft aria-hidden="true" className="w-4 h-4" />
+              <ChevronLeft aria-hidden="true" className="w-5 h-5" />
             </button>
             <button
               type="button"
               onClick={() => scrollCategories('right')}
-              className="w-9 h-9 sm:w-10 sm:h-10 min-w-[36px] min-h-[36px] rounded-full bg-white hover:bg-[#F1EAD9] text-[#241F18] border border-[#241F18] flex items-center justify-center shadow-xs cursor-pointer active:scale-95 transition-transform touch-manipulation"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-white hover:bg-[#F1EAD9] text-[#241F18] border border-[#241F18] flex items-center justify-center shadow-xs cursor-pointer active:scale-95 transition-transform touch-manipulation"
               title="Next Category"
               aria-label="Next Category"
             >
-              <ChevronRight aria-hidden="true" className="w-4 h-4" />
+              <ChevronRight aria-hidden="true" className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -514,7 +514,7 @@ export default function App() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`tag-chip shrink-0 font-bold text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-all ${
+                className={`tag-chip shrink-0 font-bold text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-all min-h-[48px] inline-flex items-center gap-2 px-3.5 ${
                   isSelected 
                     ? 'bg-[#2B4430] text-[#F1EAD9] shadow-[2px_2px_0_#241F18]' 
                     : 'bg-white text-[#241F18] hover:bg-[#F1EAD9]'
@@ -533,7 +533,7 @@ export default function App() {
       </section>
 
       {/* 4. Main Catalog: "Aaj ka Stock" */}
-      <main id="shop" className="flex-1 max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 w-full">
+      <section id="shop" className="flex-1 max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 w-full">
         
         {/* Section Heading */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-4 sm:mb-6 pb-2 border-b-[1.5px] border-dashed border-[#6B6152]">
@@ -575,7 +575,7 @@ export default function App() {
             </p>
             <button
               onClick={() => { setIsAdminOpen(true); window.location.hash = 'admin'; }}
-              className="mt-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-[4px_12px_4px_12px] bg-[#2B4430] text-[#F1EAD9] text-xs sm:text-sm font-bold border-[1.5px] border-[#241F18] shadow-[3px_3px_0_#241F18] hover:bg-[#152A1C] transition-all cursor-pointer"
+              className="mt-3 inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[48px] rounded-[4px_12px_4px_12px] bg-[#2B4430] text-[#F1EAD9] text-xs sm:text-sm font-bold border-[1.5px] border-[#241F18] shadow-[3px_3px_0_#241F18] hover:bg-[#152A1C] transition-all cursor-pointer"
             >
               <span>+ Add Products in Admin (सामान जोड़ें)</span>
             </button>
@@ -593,7 +593,7 @@ export default function App() {
             </p>
             <button
               onClick={() => { setSearchTerm(''); setSelectedCategory('All Items'); }}
-              className="mt-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-[4px_12px_4px_12px] bg-[#2B4430] text-[#F1EAD9] text-xs font-bold border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#152A1C] transition-colors cursor-pointer"
+              className="mt-2 px-4 sm:px-5 py-2 sm:py-2.5 min-h-[48px] inline-flex items-center justify-center rounded-[4px_12px_4px_12px] bg-[#2B4430] text-[#F1EAD9] text-xs font-bold border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#152A1C] transition-colors cursor-pointer"
             >
               Show All Products (सभी सामान देखें)
             </button>
@@ -612,7 +612,7 @@ export default function App() {
           </div>
         )}
 
-      </main>
+      </section>
 
       {/* Store Location & 1 KM Delivery Radius Section */}
       <section className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 w-full">
