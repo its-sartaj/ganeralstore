@@ -29,6 +29,12 @@ export function cleanPhoneNumber(phone?: string): string {
   return digitsOnly;
 }
 
+export function formatTelLink(phone?: string): string {
+  const cleaned = cleanPhoneNumber(phone);
+  if (!cleaned) return '#';
+  return `tel:+91${cleaned}`;
+}
+
 export function sanitizeUrl(url?: string, fallback = ''): string {
   if (!url) return fallback;
   const trimmed = url.trim();

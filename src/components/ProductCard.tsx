@@ -34,8 +34,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <img
           src={imageError ? fallbackImage : (product.image || fallbackImage)}
           alt={product.name}
+          width="112"
+          height="112"
+          decoding="async"
           onError={() => setImageError(true)}
           className="w-full h-full object-contain rounded-full hover:scale-105 transition-transform duration-300"
+          style={{ aspectRatio: '1 / 1' }}
           loading="lazy"
         />
         
@@ -139,7 +143,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <button 
             type="button"
             disabled
-            className="w-full min-h-[44px] py-2 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] bg-slate-200 text-slate-600 font-bold text-xs border border-slate-300 cursor-not-allowed"
+            className="w-full min-h-[48px] py-2 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] bg-slate-200 text-slate-600 font-bold text-xs border border-slate-300 cursor-not-allowed"
           >
             Out of Stock
           </button>
@@ -149,7 +153,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             disabled={isMaxStockReached}
             onClick={() => onUpdateQuantity(product.id, Math.min(product.stock, quantity + 1))}
             aria-label={`In cart: ${quantity} units of ${product.name}. Click to add another.`}
-            className={`w-full min-h-[44px] py-2 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] font-bold text-xs border-[1.5px] border-[#241F18] transition-all flex items-center justify-center gap-1.5 touch-manipulation ${
+            className={`w-full min-h-[48px] py-2 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] font-bold text-xs border-[1.5px] border-[#241F18] transition-all flex items-center justify-center gap-1.5 touch-manipulation ${
               isMaxStockReached
                 ? 'bg-[#152A1C] text-[#DCE6DF] cursor-default'
                 : 'bg-[#2E7D42] text-white shadow-[1.5px_1.5px_0_#241F18] sm:shadow-[2px_2px_0_#241F18] cursor-pointer'
@@ -165,7 +169,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             type="button"
             onClick={() => onAddToCart(product, 1)}
             aria-label={`Add ${product.name} to cart for ${formatCurrency(product.price)}`}
-            className="w-full min-h-[44px] py-2.5 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] bg-[#2B4430] text-[#F1EAD9] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] sm:shadow-[2px_2px_0_#241F18] hover:shadow-[3px_3px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-1.5 touch-manipulation"
+            className="w-full min-h-[48px] py-2.5 rounded-[4px_8px_4px_8px] sm:rounded-[4px_10px_4px_10px] bg-[#2B4430] text-[#F1EAD9] font-bold text-xs border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] sm:shadow-[2px_2px_0_#241F18] hover:shadow-[3px_3px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-1.5 touch-manipulation"
           >
             <ShoppingBag aria-hidden="true" className="w-4 h-4 text-[#C68A2E] shrink-0" />
             <span>Add to Cart</span>

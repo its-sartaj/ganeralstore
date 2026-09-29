@@ -7,7 +7,7 @@ import {
   MapPin 
 } from 'lucide-react';
 import { StoreSettings } from '../types';
-import { formatCurrency, cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
+import { formatCurrency, cleanPhoneNumber, sanitizeUrl, formatTelLink } from '../lib/utils';
 
 interface NavbarProps {
   settings: StoreSettings;
@@ -27,7 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSearchChange
 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-[#F1EAD9] border-b-[1.5px] border-[#241F18] shadow-xs">
+    <header className="sticky top-0 z-50 w-full bg-[#F1EAD9]/95 backdrop-blur-md border-b-[1.5px] border-[#241F18] shadow-xs">
       
       {/* Top Notice / Contact Strip */}
       <div className="bg-[#152A1C] text-[#DCE6DF] text-xs py-1.5 px-3 border-b border-[#241F18]">
@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-1 bg-white/10 hover:bg-white/20 text-[#F1EAD9] hover:text-white px-2.5 py-1 rounded-full font-bold transition-all border border-white/20 min-h-[36px]"
+              className="hidden md:flex items-center gap-1 bg-white/10 hover:bg-white/20 text-[#F1EAD9] hover:text-white px-3 py-1.5 rounded-full font-bold transition-all border border-white/20 min-h-[48px]"
               title="Open shop location on Google Maps"
               aria-label="Open Khurshid General Store location on Google Maps"
             >
@@ -58,12 +58,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             </a>
 
             <a 
-              href={`tel:${cleanPhoneNumber(settings.phone1)}`} 
-              className="flex items-center gap-1 text-[#F1EAD9] hover:text-[#C68A2E] transition-colors py-1 px-1.5 rounded-md min-h-[44px] touch-manipulation"
+              href={formatTelLink(settings.phone1)} 
+              className="flex items-center gap-1 text-[#F1EAD9] hover:text-[#FFE082] transition-colors py-1 px-2 rounded-md min-h-[48px] touch-manipulation"
               title="Call Store"
               aria-label={`Call Khurshid General Store at ${settings.phone1}`}
             >
-              <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#C68A2E]" />
+              <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#FFE082]" />
               <span className="hidden xs:inline">{settings.phone1}</span>
               <span className="xs:hidden">Call</span>
             </a>
@@ -72,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`} 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-[#0e3d1e] px-2.5 py-1 rounded-full font-bold transition-colors min-h-[44px] touch-manipulation"
+              className="flex items-center gap-1 bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-[#0e3d1e] px-3 py-1.5 rounded-full font-bold transition-colors min-h-[48px] touch-manipulation"
               aria-label="Chat with Khurshid General Store on WhatsApp"
             >
               <MessageCircle aria-hidden="true" className="w-3.5 h-3.5" />
@@ -136,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onOpenCart}
-              className="flex items-center gap-1.5 sm:gap-2 bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] px-3 sm:px-4 py-2 rounded-[4px_10px_4px_10px] sm:rounded-[4px_12px_4px_12px] font-bold text-xs sm:text-sm shadow-[2px_2px_0_#241F18] sm:shadow-[3px_3px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer touch-manipulation min-h-[44px]"
+              className="flex items-center gap-1.5 sm:gap-2 bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] px-3 sm:px-4 py-2 rounded-[4px_10px_4px_10px] sm:rounded-[4px_12px_4px_12px] font-bold text-xs sm:text-sm shadow-[2px_2px_0_#241F18] sm:shadow-[3px_3px_0_#241F18] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer touch-manipulation min-h-[48px]"
             >
               <span aria-hidden="true">🧺</span>
               <span>Cart</span>
@@ -164,14 +164,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search Atta, Rice, Dal, Tel, Ghee, Masala..."
-              className="w-full pl-9 pr-10 py-2 text-xs bg-white border-[1.5px] border-[#241F18] rounded-[4px_10px_4px_10px] focus:outline-hidden focus:ring-1 focus:ring-[#C68A2E] min-h-[44px]"
+              className="w-full pl-9 pr-12 py-2 text-xs bg-white border-[1.5px] border-[#241F18] rounded-[4px_10px_4px_10px] focus:outline-hidden focus:ring-1 focus:ring-[#C68A2E] min-h-[48px]"
             />
             {searchTerm && (
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
                 aria-label="Clear search input"
-                className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-sm text-[#4E4639] font-bold min-w-[44px] min-h-[44px] cursor-pointer touch-manipulation"
+                className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-sm text-[#4E4639] font-bold min-w-[48px] min-h-[48px] cursor-pointer touch-manipulation"
               >
                 ✕
               </button>

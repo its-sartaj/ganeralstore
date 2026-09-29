@@ -73,61 +73,66 @@ export const BillModal: React.FC<BillModalProps> = ({
   const handleGenerateBill = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!customer.name.trim()) {
-      alert('Kripya Customer ka Naam zaroor bharein.');
-      return;
-    }
-
-    const cleanedPhone = cleanPhoneNumber(customer.phone);
-    if (!cleanedPhone || cleanedPhone.length < 10) {
-      alert('Kripya sahi 10-digit Mobile Number zaroor bharein.');
-      return;
-    }
-
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-    const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-
-    const newInvoice: Invoice = {
-      id: 'inv_' + Date.now(),
-      invoiceNumber: generateInvoiceNumber(),
-      createdAt: now.toISOString(),
-      dateStr,
-      timeStr,
-      customer: { ...customer, phone: cleanedPhone },
-      items: items.map(i => ({
-        id: i.product.id,
-        name: i.product.name,
-        unit: i.product.unit,
-        rate: i.product.price,
-        mrp: i.product.mrp,
-        quantity: i.quantity,
-        amount: i.product.price * i.quantity,
-        image: i.product.image
-      })),
-      subtotal,
-      discount: totalDiscount,
-      deliveryFee,
-      taxAmount,
-      totalAmount: grandTotal,
-      paymentStatus: customer.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Paid',
-      orderStatus: 'New',
-      cashierName: 'Admin Counter'
-    };
-
-    setInvoice(newInvoice);
-    setStep('invoice');
-    onOrderCompleted(newInvoice);
-
-    // Trigger celebration confetti
     try {
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.6 }
-      });
-    } catch {
-      // ignore
+      if (!customer.name.trim()) {
+        alert('Kripya Customer ka Naam zaroor bharein.');
+        return;
+      }
+
+      const cleanedPhone = cleanPhoneNumber(customer.phone);
+      if (!cleanedPhone || cleanedPhone.length < 10) {
+        alert('Kripya sahi 10-digit Mobile Number zaroor bharein.');
+        return;
+      }
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+      const newInvoice: Invoice = {
+        id: 'inv_' + Date.now(),
+        invoiceNumber: generateInvoiceNumber(),
+        createdAt: now.toISOString(),
+        dateStr,
+        timeStr,
+        customer: { ...customer, phone: cleanedPhone },
+        items: items.map(i => ({
+          id: i.product.id,
+          name: i.product.name,
+          unit: i.product.unit,
+          rate: i.product.price,
+          mrp: i.product.mrp,
+          quantity: i.quantity,
+          amount: i.product.price * i.quantity,
+          image: i.product.image
+        })),
+        subtotal,
+        discount: totalDiscount,
+        deliveryFee,
+        taxAmount,
+        totalAmount: grandTotal,
+        paymentStatus: customer.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Paid',
+        orderStatus: 'New',
+        cashierName: 'Admin Counter'
+      };
+
+      setInvoice(newInvoice);
+      setStep('invoice');
+      onOrderCompleted(newInvoice);
+
+      // Trigger celebration confetti
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } catch {
+        // ignore
+      }
+    } catch (err) {
+      console.error('Error generating bill invoice:', err);
+      alert('Bill generate karne mein error aaya. Kripya customer details dubara check karein.');
     }
   };
 

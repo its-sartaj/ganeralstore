@@ -77,7 +77,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   type="button"
                   onClick={onClearCart}
                   aria-label="Clear all items from cart"
-                  className="font-hand text-xs text-[#B14B2C] hover:underline font-bold px-2.5 py-1.5 min-h-[44px] cursor-pointer"
+                  className="font-hand text-xs text-[#B14B2C] hover:underline font-bold px-2.5 py-2 min-h-[48px] flex items-center cursor-pointer"
                 >
                   Clear all
                 </button>
@@ -86,7 +86,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 type="button"
                 onClick={onClose}
                 aria-label="Close cart drawer"
-                className="w-9 h-9 rounded-full border border-[#241F18] bg-white flex items-center justify-center text-[#4E4639] hover:text-[#241F18] font-bold text-sm min-w-[44px] min-h-[44px] cursor-pointer"
+                className="w-10 h-10 rounded-full border border-[#241F18] bg-white flex items-center justify-center text-[#4E4639] hover:text-[#241F18] font-bold text-sm min-w-[48px] min-h-[48px] cursor-pointer"
               >
                 ✕
               </button>
@@ -257,7 +257,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="View Shop Location on Google Maps"
-                    className="text-[11px] font-bold text-[#8F371C] hover:underline inline-flex items-center gap-1 min-h-[36px]"
+                    className="text-[11px] font-bold text-[#8F371C] hover:underline inline-flex items-center gap-1 min-h-[48px]"
                   >
                     <span>📍 View Shop on Google Maps (दुकान का नक्शा देखें) ↗</span>
                   </a>

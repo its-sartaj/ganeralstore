@@ -8,7 +8,7 @@ import {
   Lock 
 } from 'lucide-react';
 import { StoreSettings } from '../types';
-import { cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
+import { cleanPhoneNumber, sanitizeUrl, formatTelLink } from '../lib/utils';
 
 interface FooterProps {
   settings: StoreSettings;
@@ -69,9 +69,9 @@ export const Footer: React.FC<FooterProps> = ({
               <div className="flex items-center gap-2 text-white">
                 <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#FFE082]" />
                 <a 
-                  href={`tel:${cleanPhoneNumber(settings.phone1)}`} 
+                  href={formatTelLink(settings.phone1)} 
                   aria-label={`Call primary phone ${settings.phone1}`}
-                  className="hover:text-[#FFE082] py-1 inline-block min-h-[36px]"
+                  className="hover:text-[#FFE082] py-2 inline-flex items-center min-h-[48px]"
                 >
                   +91 {settings.phone1} (Primary)
                 </a>
@@ -81,9 +81,9 @@ export const Footer: React.FC<FooterProps> = ({
                 <div className="flex items-center gap-2 text-[#DCE6DF]">
                   <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#9FB2CE]" />
                   <a 
-                    href={`tel:${cleanPhoneNumber(settings.phone2)}`} 
+                    href={formatTelLink(settings.phone2)} 
                     aria-label={`Call secondary phone ${settings.phone2}`}
-                    className="hover:text-white py-1 inline-block min-h-[36px]"
+                    className="hover:text-white py-2 inline-flex items-center min-h-[48px]"
                   >
                     +91 {settings.phone2} (Secondary)
                   </a>
@@ -96,7 +96,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <a 
                     href={`mailto:${settings.email}`} 
                     aria-label={`Send email to ${settings.email}`}
-                    className="hover:text-white py-1 inline-block min-h-[36px]"
+                    className="hover:text-white py-2 inline-flex items-center min-h-[48px]"
                   >
                     {settings.email}
                   </a>

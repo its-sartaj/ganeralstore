@@ -6,7 +6,7 @@ import {
   Store
 } from 'lucide-react';
 import { StoreSettings } from '../types';
-import { cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
+import { cleanPhoneNumber, sanitizeUrl, formatTelLink } from '../lib/utils';
 
 interface HeroBannerProps {
   settings: StoreSettings;
@@ -75,8 +75,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           {/* Dual Phone Numbers Quick Access Strip */}
           <div className="pt-1 flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono w-full">
             <a 
-              href={`tel:${cleanPhoneNumber(settings.phone1)}`}
-              className="inline-flex items-center gap-1.5 bg-white px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] font-bold text-[#152A1C] hover:bg-[#F1EAD9] touch-manipulation shrink-0 min-h-[44px]"
+              href={formatTelLink(settings.phone1)}
+              className="inline-flex items-center gap-1.5 bg-white px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] font-bold text-[#152A1C] hover:bg-[#F1EAD9] touch-manipulation shrink-0 min-h-[48px]"
             >
               <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#2B4430]" />
               <span>📞 {settings.phone1}</span>
@@ -86,7 +86,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 bg-[#25D366] text-[#0e3d1e] px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] font-bold touch-manipulation shrink-0 min-h-[44px]"
+              className="inline-flex items-center gap-1.5 bg-[#25D366] text-[#0e3d1e] px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_#241F18] font-bold touch-manipulation shrink-0 min-h-[48px]"
             >
               <MessageCircle aria-hidden="true" className="w-3.5 h-3.5" />
               <span>WhatsApp Helpline</span>
@@ -94,8 +94,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
             {settings.phone2 && (
               <a 
-                href={`tel:${cleanPhoneNumber(settings.phone2)}`}
-                className="inline-flex items-center gap-1.5 bg-white px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_rgba(36,31,24,0.15)] font-bold text-[#152A1C] hover:bg-[#F1EAD9] touch-manipulation shrink-0 min-h-[44px]"
+                href={formatTelLink(settings.phone2)}
+                className="inline-flex items-center gap-1.5 bg-white px-3 py-2 rounded-[4px_8px_4px_8px] border-[1.5px] border-[#241F18] shadow-[1.5px_1.5px_0_rgba(36,31,24,0.15)] font-bold text-[#152A1C] hover:bg-[#F1EAD9] touch-manipulation shrink-0 min-h-[48px]"
               >
                 <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#C68A2E]" />
                 <span>Alt: {settings.phone2}</span>
@@ -164,8 +164,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             {/* Direct Helpline Buttons */}
             <div className="mt-2.5 pt-2 sm:pt-3 border-t border-dashed border-white/30 grid grid-cols-2 gap-2 text-[11px] sm:text-xs">
               <a
-                href={`tel:${cleanPhoneNumber(settings.phone1)}`}
-                className="flex items-center justify-center gap-1.5 bg-[#F1EAD9] text-[#152A1C] py-2.5 sm:py-2.5 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-white transition-colors touch-manipulation text-center min-h-[44px]"
+                href={formatTelLink(settings.phone1)}
+                className="flex items-center justify-center gap-1.5 bg-[#F1EAD9] text-[#152A1C] py-2.5 sm:py-3 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-white transition-colors touch-manipulation text-center min-h-[48px]"
               >
                 <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#2B4430] shrink-0" />
                 <span>Call Store</span>
@@ -175,7 +175,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 bg-[#25D366] text-[#0e3d1e] py-2.5 sm:py-2.5 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-[#20ba59] transition-colors touch-manipulation text-center min-h-[44px]"
+                className="flex items-center justify-center gap-1.5 bg-[#25D366] text-[#0e3d1e] py-2.5 sm:py-3 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-[#20ba59] transition-colors touch-manipulation text-center min-h-[48px]"
               >
                 <MessageCircle aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
                 <span>WhatsApp</span>
@@ -189,7 +189,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open Khurshid General Store location in Google Maps"
-                className="text-[11px] text-[#F1EAD9] hover:text-[#E2A33A] flex items-center justify-between gap-1 bg-black/30 px-2.5 py-2 rounded-lg border border-white/15 hover:border-[#E2A33A] transition-all group w-full overflow-hidden min-h-[44px]"
+                className="text-[11px] text-[#F1EAD9] hover:text-[#E2A33A] flex items-center justify-between gap-1 bg-black/30 px-2.5 py-2.5 rounded-lg border border-white/15 hover:border-[#E2A33A] transition-all group w-full overflow-hidden min-h-[48px]"
                 title="Open location in Google Maps"
               >
                 <div className="flex items-center gap-1.5 min-w-0 flex-1 truncate">

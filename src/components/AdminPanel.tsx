@@ -189,52 +189,57 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Save Product (Add or Edit)
   const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!productForm.name.trim()) {
-      alert('Kripya product ka naam zaroor bharein.');
-      return;
+    try {
+      if (!productForm.name.trim()) {
+        alert('Kripya product ka naam zaroor bharein.');
+        return;
+      }
+
+      const safeMrp = Math.max(0, parseFloat(String(productForm.mrp)) || 0);
+      const safePrice = Math.max(0, parseFloat(String(productForm.price)) || 0);
+      const safeStock = Math.max(0, Math.floor(parseFloat(String(productForm.stock)) || 0));
+      const safeImage = sanitizeUrl(productForm.image, 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80');
+
+      if (editingProduct) {
+        onUpdateProduct({
+          ...editingProduct,
+          name: productForm.name.trim(),
+          hindiName: productForm.hindiName.trim(),
+          category: productForm.category,
+          unit: productForm.unit.trim() || '1 Pack',
+          mrp: safeMrp || safePrice,
+          price: safePrice,
+          stock: safeStock,
+          image: safeImage,
+          description: productForm.description.trim(),
+          badge: productForm.badge.trim()
+        });
+        showToast(`Product "${productForm.name}" updated ✓`);
+      } else {
+        const newProduct: Product = {
+          id: 'p_' + Date.now(),
+          name: productForm.name.trim(),
+          hindiName: productForm.hindiName.trim(),
+          category: productForm.category,
+          unit: productForm.unit.trim() || '1 Pack',
+          mrp: safeMrp || safePrice,
+          price: safePrice,
+          stock: safeStock,
+          image: safeImage,
+          description: productForm.description.trim(),
+          badge: productForm.badge.trim(),
+          featured: true,
+          isPopular: true
+        };
+        onAddProduct(newProduct);
+        showToast(`New Product "${productForm.name}" added ✓`);
+      }
+
+      setIsProductModalOpen(false);
+    } catch (err) {
+      console.error('Error saving product:', err);
+      alert('Product save karte samay error aaya. Kripya form check karein.');
     }
-
-    const safeMrp = Math.max(0, parseFloat(String(productForm.mrp)) || 0);
-    const safePrice = Math.max(0, parseFloat(String(productForm.price)) || 0);
-    const safeStock = Math.max(0, Math.floor(parseFloat(String(productForm.stock)) || 0));
-    const safeImage = sanitizeUrl(productForm.image, 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80');
-
-    if (editingProduct) {
-      onUpdateProduct({
-        ...editingProduct,
-        name: productForm.name.trim(),
-        hindiName: productForm.hindiName.trim(),
-        category: productForm.category,
-        unit: productForm.unit.trim() || '1 Pack',
-        mrp: safeMrp || safePrice,
-        price: safePrice,
-        stock: safeStock,
-        image: safeImage,
-        description: productForm.description.trim(),
-        badge: productForm.badge.trim()
-      });
-      showToast(`Product "${productForm.name}" updated ✓`);
-    } else {
-      const newProduct: Product = {
-        id: 'p_' + Date.now(),
-        name: productForm.name.trim(),
-        hindiName: productForm.hindiName.trim(),
-        category: productForm.category,
-        unit: productForm.unit.trim() || '1 Pack',
-        mrp: safeMrp || safePrice,
-        price: safePrice,
-        stock: safeStock,
-        image: safeImage,
-        description: productForm.description.trim(),
-        badge: productForm.badge.trim(),
-        featured: true,
-        isPopular: true
-      };
-      onAddProduct(newProduct);
-      showToast(`New Product "${productForm.name}" added ✓`);
-    }
-
-    setIsProductModalOpen(false);
   };
 
   // Image Upload handler with auto-compression for high reliability
@@ -364,34 +369,39 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Save Settings
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    const pin = (settingsForm.adminPin || '').trim();
-    if (pin.length < 4) {
-      alert('Admin PIN kam se kam 4 characters ka hona chahiye.');
-      return;
+    try {
+      const pin = (settingsForm.adminPin || '').trim();
+      if (pin.length < 4) {
+        alert('Admin PIN kam se kam 4 characters ka hona chahiye.');
+        return;
+      }
+
+      const cleanSettings: StoreSettings = {
+        ...settingsForm,
+        storeName: settingsForm.storeName.trim() || 'Khurshid General Store',
+        tagline: settingsForm.tagline.trim() || 'Roz ka Saaman, Ghar Tak',
+        phone1: cleanPhoneNumber(settingsForm.phone1) || '9162288060',
+        phone2: cleanPhoneNumber(settingsForm.phone2),
+        email: settingsForm.email.trim(),
+        address: settingsForm.address.trim(),
+        cityState: settingsForm.cityState.trim(),
+        gstNumber: settingsForm.gstNumber.trim(),
+        fssaiNumber: settingsForm.fssaiNumber.trim(),
+        upiId: settingsForm.upiId.trim() || '9162288060@upi',
+        deliveryFee: Math.max(0, Number(settingsForm.deliveryFee) || 0),
+        minFreeDelivery: Math.max(0, Number(settingsForm.minFreeDelivery) || 0),
+        lowStockThreshold: Math.max(1, Math.floor(Number(settingsForm.lowStockThreshold) || 2)),
+        deliveryRadiusKm: Math.max(0.5, Number(settingsForm.deliveryRadiusKm) || 1),
+        googleMapsUrl: sanitizeUrl(settingsForm.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'),
+        adminPin: pin
+      };
+
+      onUpdateSettings(cleanSettings);
+      showToast('Store settings updated ✓');
+    } catch (err) {
+      console.error('Error saving settings:', err);
+      alert('Settings save karne mein error aaya. Kripya values check karein.');
     }
-
-    const cleanSettings: StoreSettings = {
-      ...settingsForm,
-      storeName: settingsForm.storeName.trim() || 'Khurshid General Store',
-      tagline: settingsForm.tagline.trim() || 'Roz ka Saaman, Ghar Tak',
-      phone1: cleanPhoneNumber(settingsForm.phone1) || '9162288060',
-      phone2: cleanPhoneNumber(settingsForm.phone2),
-      email: settingsForm.email.trim(),
-      address: settingsForm.address.trim(),
-      cityState: settingsForm.cityState.trim(),
-      gstNumber: settingsForm.gstNumber.trim(),
-      fssaiNumber: settingsForm.fssaiNumber.trim(),
-      upiId: settingsForm.upiId.trim() || '9162288060@upi',
-      deliveryFee: Math.max(0, Number(settingsForm.deliveryFee) || 0),
-      minFreeDelivery: Math.max(0, Number(settingsForm.minFreeDelivery) || 0),
-      lowStockThreshold: Math.max(1, Math.floor(Number(settingsForm.lowStockThreshold) || 2)),
-      deliveryRadiusKm: Math.max(0.5, Number(settingsForm.deliveryRadiusKm) || 1),
-      googleMapsUrl: sanitizeUrl(settingsForm.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'),
-      adminPin: pin
-    };
-
-    onUpdateSettings(cleanSettings);
-    showToast('Store settings updated ✓');
   };
 
   // Low Stock Calculations & Quick Controls

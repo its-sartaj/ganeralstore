@@ -5,11 +5,12 @@ import {
   MapPin,
   Truck,
   MessageCircle,
-  Store
+  Store,
+  PhoneCall
 } from 'lucide-react';
 import { Product, StoreSettings, CartItem, Invoice } from './types';
 import { INITIAL_PRODUCTS, DEFAULT_STORE_SETTINGS, INITIAL_CATEGORIES } from './data/initialProducts';
-import { formatCurrency, cleanPhoneNumber } from './lib/utils';
+import { formatCurrency, cleanPhoneNumber, formatTelLink, sanitizeUrl } from './lib/utils';
 import { Navbar } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { ProductCard } from './components/ProductCard';
@@ -453,7 +454,7 @@ export default function App() {
       />
 
       {/* Main Landmark */}
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="flex-1 pb-24 sm:pb-8">
         {/* 2. Hero Banner */}
         <HeroBanner
           settings={settings}
@@ -680,13 +681,13 @@ export default function App() {
                 </a>
 
                 <a
-                  href={`https://wa.me/91${settings.phone1}?text=${encodeURIComponent('Namaste, main Khurshid General Store ke 1 km delivery area se order karna chahta hoon. Mera location share kar raha hoon.')}`}
+                  href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}?text=${encodeURIComponent('Namaste, main Khurshid General Store ke 1 km delivery area se order karna chahta hoon. Mera location share kar raha hoon.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Share location on WhatsApp"
                   className="inline-flex items-center justify-center gap-1.5 bg-[#25D366] text-[#0e3d1e] px-4 py-3 rounded-[4px_10px_4px_10px] font-bold text-xs sm:text-sm border-[1.5px] border-[#241F18] shadow-[2px_2px_0_#241F18] hover:bg-[#20ba59] transition-all cursor-pointer text-center min-h-[48px] touch-manipulation"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                  <MessageCircle aria-hidden="true" className="w-4 h-4 shrink-0" />
                   <span>Send Location WhatsApp</span>
                 </a>
               </div>
@@ -697,7 +698,7 @@ export default function App() {
               <div className="bg-[#152A1C] text-white rounded-2xl p-4 sm:p-5 border-[1.5px] border-[#241F18] shadow-[3px_3px_0_#241F18] space-y-3.5">
                 <div className="flex items-center justify-between border-b border-white/20 pb-2.5">
                   <div className="flex items-center gap-1.5">
-                    <Store className="w-4 h-4 text-[#C68A2E]" />
+                    <Store aria-hidden="true" className="w-4 h-4 text-[#C68A2E]" />
                     <span className="font-bold text-xs sm:text-sm text-[#F1EAD9]">Store Map & Hours</span>
                   </div>
                   <span className="text-[10px] font-mono text-[#25D366] bg-[#25D366]/20 px-2 py-0.5 rounded-full font-bold">
@@ -712,38 +713,38 @@ export default function App() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#9FB2CE]">Delivery Zone:</span>
-                    <span className="font-bold text-[#C68A2E]">Within 1 KM Radius</span>
+                    <span className="font-bold text-[#FFE082]">Within 1 KM Radius</span>
                   </div>
                   <div className="flex justify-between items-center pt-1 border-t border-white/10">
                     <span className="text-[#9FB2CE]">Helpline 1:</span>
                     <a 
-                      href={`tel:${cleanPhoneNumber(settings.phone1)}`} 
+                      href={formatTelLink(settings.phone1)} 
                       aria-label={`Call primary store phone ${settings.phone1}`}
-                      className="text-white hover:text-[#C68A2E] py-1 px-2.5 bg-white/10 hover:bg-white/20 rounded-md font-bold min-h-[36px] inline-flex items-center touch-manipulation"
+                      className="text-white hover:text-[#FFE082] py-2 px-3 bg-white/10 hover:bg-white/20 rounded-md font-bold min-h-[48px] inline-flex items-center touch-manipulation"
                     >
-                      {settings.phone1}
+                      +91 {settings.phone1}
                     </a>
                   </div>
                   {settings.phone2 && (
                     <div className="flex justify-between items-center pt-1 border-t border-white/10">
                       <span className="text-[#9FB2CE]">Helpline 2:</span>
                       <a 
-                        href={`tel:${cleanPhoneNumber(settings.phone2)}`} 
+                        href={formatTelLink(settings.phone2)} 
                         aria-label={`Call secondary store phone ${settings.phone2}`}
-                        className="text-white hover:text-[#C68A2E] py-1 px-2.5 bg-white/10 hover:bg-white/20 rounded-md font-bold min-h-[36px] inline-flex items-center touch-manipulation"
+                        className="text-white hover:text-[#FFE082] py-2 px-3 bg-white/10 hover:bg-white/20 rounded-md font-bold min-h-[48px] inline-flex items-center touch-manipulation"
                       >
-                        {settings.phone2}
+                        +91 {settings.phone2}
                       </a>
                     </div>
                   )}
                 </div>
 
                 <a
-                  href={settings.googleMapsUrl || 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8'}
+                  href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Click to navigate to Khurshid General Store on Google Maps"
-                  className="w-full bg-[#C68A2E] text-[#152A1C] hover:bg-white py-3 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors text-center min-h-[44px] touch-manipulation"
+                  className="w-full bg-[#C68A2E] text-[#152A1C] hover:bg-white py-3.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors text-center min-h-[48px] touch-manipulation"
                 >
                   <MapPin aria-hidden="true" className="w-4 h-4 shrink-0" />
                   <span>Click to Navigate on Google Maps</span>
@@ -755,18 +756,79 @@ export default function App() {
       </section>
       </main>
 
-      {/* Floating Bottom Sticky Cart Button / WhatsApp FAB */}
+      {/* Consolidated Mobile Bottom Sticky Action Bar (< 640px) */}
+      {!isCartOpen && !isBillModalOpen && !isAdminOpen && (
+        <nav
+          aria-label="Mobile Bottom Quick Actions"
+          className="fixed bottom-0 inset-x-0 z-40 bg-[#152A1C]/95 backdrop-blur-md border-t-[1.5px] border-[#241F18] px-2 py-1.5 flex items-center justify-around shadow-2xl sm:hidden"
+        >
+          {/* Call Store */}
+          <a
+            href={formatTelLink(settings.phone1)}
+            aria-label={`Call Store at ${settings.phone1}`}
+            className="flex flex-col items-center justify-center text-white hover:text-[#FFE082] py-1 px-2 rounded-lg text-[10px] font-bold min-h-[48px] min-w-[48px] touch-manipulation transition-colors"
+          >
+            <PhoneCall aria-hidden="true" className="w-5 h-5 text-[#FFE082] mb-0.5" />
+            <span>Call</span>
+          </a>
+
+          {/* WhatsApp Order */}
+          <a
+            href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}?text=${encodeURIComponent('Namaste Khurshid General Store, mujhe saman order karna hai.')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order on WhatsApp"
+            className="flex flex-col items-center justify-center text-[#25D366] hover:text-white py-1 px-2 rounded-lg text-[10px] font-bold min-h-[48px] min-w-[48px] touch-manipulation transition-colors"
+          >
+            <MessageCircle aria-hidden="true" className="w-5 h-5 mb-0.5" />
+            <span>WhatsApp</span>
+          </a>
+
+          {/* Cart with Live Badge */}
+          <button
+            type="button"
+            onClick={() => setIsCartOpen(true)}
+            aria-label={`View Cart with ${totalCartCount} items`}
+            className="relative flex flex-col items-center justify-center text-[#F1EAD9] bg-[#2B4430] hover:bg-[#1f3323] px-3.5 py-1 rounded-xl border border-[#241F18] text-[10px] font-bold min-h-[48px] min-w-[56px] shadow-xs touch-manipulation cursor-pointer transition-colors"
+          >
+            <div className="relative">
+              <span aria-hidden="true" className="text-base leading-none">🧺</span>
+              {totalCartCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 bg-[#C68A2E] text-[#241F18] font-mono font-bold text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
+                  {totalCartCount}
+                </span>
+              )}
+            </div>
+            <span>Cart</span>
+          </button>
+
+          {/* Store Maps Location */}
+          <a
+            href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View store location on Google Maps"
+            className="flex flex-col items-center justify-center text-[#DCE6DF] hover:text-[#FFE082] py-1 px-2 rounded-lg text-[10px] font-bold min-h-[48px] min-w-[48px] touch-manipulation transition-colors"
+          >
+            <MapPin aria-hidden="true" className="w-5 h-5 text-[#B14B2C] mb-0.5" />
+            <span>Location</span>
+          </a>
+        </nav>
+      )}
+
+      {/* Floating Bottom Sticky Cart Button on Desktop / Tablet (>= sm) */}
       {totalCartCount > 0 && !isCartOpen && !isBillModalOpen && (
-        <div className="fixed bottom-5 right-5 sm:right-8 z-40 animate-slide-up">
+        <div className="hidden sm:block fixed bottom-6 right-6 sm:right-8 z-40 animate-slide-up">
           <button
             onClick={() => setIsCartOpen(true)}
-            className="flex items-center gap-3 bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] px-5 py-3 rounded-full shadow-[4px_4px_0_#241F18] hover:shadow-[6px_6px_0_#241F18] hover:-translate-y-1 active:translate-y-0 transition-all cursor-pointer"
+            aria-label={`View Cart with ${totalCartCount} items totaling ${formatCurrency(totalCartAmount)}`}
+            className="flex items-center gap-3 bg-[#2B4430] text-[#F1EAD9] border-[1.5px] border-[#241F18] px-5 py-3 rounded-full shadow-[4px_4px_0_#241F18] hover:shadow-[6px_6px_0_#241F18] hover:-translate-y-1 active:translate-y-0 transition-all cursor-pointer min-h-[48px]"
           >
             <span className="w-7 h-7 rounded-full bg-[#C68A2E] text-[#241F18] font-mono font-bold text-xs flex items-center justify-center">
               {totalCartCount}
             </span>
             <span className="font-bold text-sm">View Cart ({formatCurrency(totalCartAmount)})</span>
-            <ChevronRight className="w-4 h-4 text-[#C68A2E]" />
+            <ChevronRight aria-hidden="true" className="w-4 h-4 text-[#C68A2E]" />
           </button>
         </div>
       )}
