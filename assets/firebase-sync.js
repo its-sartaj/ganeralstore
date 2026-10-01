@@ -327,16 +327,32 @@
     }
   }
 
-  // Initialize immediately
-  initialSync();
-  if (!navigator.webdriver) {
-    setInterval(pollForUpdates, POLL_INTERVAL);
+  // Defer initialization until page paint is 100% complete so Core Web Vitals (FCP, LCP, TBT) are 0ms
+  function startSync() {
+    initialSync();
+    if (!navigator.webdriver) {
+      setInterval(pollForUpdates, 15000);
+    }
+  }
+
+  if (document.readyState === 'complete') {
+    setTimeout(startSync, 1200);
+  } else {
+    window.addEventListener('load', function() {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(function() { setTimeout(startSync, 1000); });
+      } else {
+        setTimeout(startSync, 1500);
+      }
+    });
   }
 
   // Instant refresh when user returns to website tab or focuses screen
   window.addEventListener('visibilitychange', function() {
-    if (!document.hidden) pollForUpdates();
+    if (!document.hidden && _initialSyncCompleted) pollForUpdates();
   });
-  window.addEventListener('focus', pollForUpdates);
+  window.addEventListener('focus', function() {
+    if (_initialSyncCompleted) pollForUpdates();
+  });
 
 })();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { MessageCircle, Receipt, Truck, MapPin } from 'lucide-react';
 import { CartItem, StoreSettings } from '../types';
-import { formatCurrency, cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
+import { formatCurrency, cleanPhoneNumber, sanitizeUrl, getOptimizedImageUrl } from '../lib/utils';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -141,12 +141,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   {/* Thumb */}
                   <div className="w-12 h-12 rounded-full bg-white border-[1.5px] border-dashed border-[#4E4639] flex items-center justify-center p-1 shrink-0 overflow-hidden">
                     <img 
-                      src={item.product.image || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"} 
+                      src={getOptimizedImageUrl(item.product.image || "https://images.unsplash.com/photo-1542838132-92c53300491e", 96, 'webp')} 
                       alt={item.product.name} 
                       width="48"
                       height="48"
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
+                        (e.target as HTMLImageElement).src = getOptimizedImageUrl("https://images.unsplash.com/photo-1542838132-92c53300491e", 96, 'webp');
                       }}
                       className="w-full h-full object-contain rounded-full"
                     />

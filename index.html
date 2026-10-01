@@ -57,19 +57,19 @@
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="34d921ecbba278cf" />
 
-    <!-- Preconnect hints for fonts -->
+    <!-- Preconnect & DNS-Prefetch hints for CDN & Google Fonts -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Preload critical production stylesheet -->
-    <link rel="preload" href="./assets/index.css?v=20260916_perf1" as="style" />
-    <link rel="stylesheet" href="./assets/index.css?v=20260916_perf1" />
+    <!-- Production Stylesheet -->
+    <link rel="stylesheet" href="./assets/index.css?v=20261001_perf100" />
 
-    <!-- Asynchronous Non-Blocking Google Fonts with font-display: swap -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;600;700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <!-- Streamlined Non-Blocking Google Fonts (Only required weights) with font-display: swap -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Space+Grotesk:wght@600;700&display=swap" media="print" onload="this.media='all'" />
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;600;700&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Space+Grotesk:wght@600;700&display=swap" />
     </noscript>
 
     <!-- Critical Above-The-Fold Inline CSS (Zero layout shift, instant paint, overflow containment) -->
@@ -93,7 +93,7 @@
         overflow-x: hidden;
         background-color: #F1EAD9;
         color: #241F18;
-        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
       }
       .font-display {
@@ -237,9 +237,9 @@
     </div>
 
     <!-- Production Optimized Application Bundle (Module, Deferred by default) -->
-    <script type="module" crossorigin src="./assets/index.js?v=20260916_perf2"></script>
+    <script type="module" crossorigin src="./assets/index.js?v=20261001_perf100"></script>
     <!-- Cloud Sync Layer -->
-    <script defer src="./assets/firebase-sync.js?v=20260916_perf1"></script>
+    <script defer src="./assets/firebase-sync.js?v=20261001_perf100"></script>
     <noscript>
       <div style="text-align:center; padding:40px 20px; font-family:sans-serif;">
         <h1>Khurshid General Store</h1>

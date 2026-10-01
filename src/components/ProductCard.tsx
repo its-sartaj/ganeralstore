@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Plus, Check, ShoppingBag } from 'lucide-react';
 import { Product } from '../types';
-import { formatCurrency } from '../lib/utils';
+import { formatCurrency, getOptimizedImageUrl } from '../lib/utils';
 
 interface ProductCardProps {
   product: Product;
   quantity: number;
+  priority?: boolean;
   onAddToCart: (product: Product, quantity: number) => void;
   onUpdateQuantity: (productId: string, newQuantity: number) => void;
 }
@@ -13,6 +14,7 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   quantity,
+  priority = false,
   onAddToCart,
   onUpdateQuantity
 }) => {
@@ -22,7 +24,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     : 0;
 
   const isOutOfStock = product.stock <= 0;
-  const fallbackImage = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
+  const rawFallback = "https://images.unsplash.com/photo-1542838132-92c53300491e";
+  const fallbackImage = getOptimizedImageUrl(rawFallback, 224, 'webp');
+  const targetImage = getOptimizedImageUrl(product.image, 224, 'webp') || fallbackImage;
 
   const isMaxStockReached = quantity >= product.stock;
 
@@ -32,7 +36,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Top Circular Thumbnail with Real Photo */}
       <div className="relative w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 mx-auto rounded-full bg-[#F1EAD9] border-[1.5px] border-dashed border-[#6B6152] flex items-center justify-center p-1.5 sm:p-2 overflow-hidden shrink-0 mt-0.5 sm:mt-1">
         <img
-          src={imageError ? fallbackImage : (product.image || fallbackImage)}
+          src={imageError ? fallbackImage : targetImage}
           alt={product.name}
           width="112"
           height="112"
@@ -40,7 +44,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onError={() => setImageError(true)}
           className="w-full h-full object-contain rounded-full hover:scale-105 transition-transform duration-300"
           style={{ aspectRatio: '1 / 1' }}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          {...(priority ? { fetchPriority: "high" } : { fetchPriority: "low" })}
         />
         
         {/* Discount / Stock Flag */}

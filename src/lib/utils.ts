@@ -151,3 +151,23 @@ export function generateWhatsAppMessage(invoice: Invoice, settings: StoreSetting
 
   return encodeURIComponent(msg);
 }
+
+export function getOptimizedImageUrl(url?: string, width = 240, format = 'webp'): string {
+  if (!url) return '';
+  const safe = sanitizeUrl(url);
+  if (!safe) return '';
+  if (safe.includes('images.unsplash.com')) {
+    try {
+      const u = new URL(safe);
+      u.searchParams.set('auto', 'format');
+      u.searchParams.set('fit', 'crop');
+      u.searchParams.set('w', width.toString());
+      u.searchParams.set('q', '75');
+      u.searchParams.set('fm', format);
+      return u.toString();
+    } catch (e) {
+      return safe;
+    }
+  }
+  return safe;
+}

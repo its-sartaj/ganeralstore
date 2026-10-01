@@ -15,6 +15,9 @@ export default defineConfig(() => {
     build: {
       outDir: 'dist',
       emptyOutDir: false,
+      minify: 'esbuild',
+      target: 'es2020',
+      cssCodeSplit: true,
       rollupOptions: {
         input: {
           main: path.resolve(__dirname, 'src/main.tsx'),
@@ -30,6 +33,10 @@ export default defineConfig(() => {
           },
         },
       },
+    },
+    esbuild: {
+      drop: ['console', 'debugger'],
+      legalComments: 'none',
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
