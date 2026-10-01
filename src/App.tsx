@@ -119,13 +119,56 @@ export default function App() {
   });
   const [activeInvoiceForView, setActiveInvoiceForView] = useState<Invoice | null>(null);
   const categoryScrollRef = React.useRef<HTMLDivElement>(null);
+  const isUserInteractingRef = useRef(false);
+  const autoSlideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const pauseAutoSlideTemporarily = () => {
+    isUserInteractingRef.current = true;
+    if (autoSlideTimeoutRef.current) {
+      clearTimeout(autoSlideTimeoutRef.current);
+    }
+    autoSlideTimeoutRef.current = setTimeout(() => {
+      isUserInteractingRef.current = false;
+    }, 3500);
+  };
 
   const scrollCategories = (direction: 'left' | 'right') => {
+    pauseAutoSlideTemporarily();
     if (categoryScrollRef.current) {
       const scrollAmount = direction === 'left' ? -220 : 220;
       categoryScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
+
+  // Auto-slide categories carousel smoothly with loop-around
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const interval = setInterval(() => {
+      if (isUserInteractingRef.current || document.hidden) return;
+      
+      const el = categoryScrollRef.current;
+      if (!el) return;
+
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll <= 0) return;
+
+      // If reached end, scroll back smoothly to start
+      if (el.scrollLeft >= maxScroll - 20) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: 200, behavior: 'smooth' });
+      }
+    }, 2800);
+
+    return () => {
+      clearInterval(interval);
+      if (autoSlideTimeoutRef.current) {
+        clearTimeout(autoSlideTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Hash & Keyboard shortcut listener for store owner / admin access
   useEffect(() => {
@@ -499,9 +542,14 @@ export default function App() {
           </div>
         </div>
 
-        {/* Scrollable Categories List */}
+        {/* Scrollable Categories List (Auto-slides smoothly) */}
         <div 
           ref={categoryScrollRef}
+          onMouseEnter={() => { isUserInteractingRef.current = true; }}
+          onMouseLeave={() => { isUserInteractingRef.current = false; }}
+          onTouchStart={() => { isUserInteractingRef.current = true; }}
+          onTouchEnd={pauseAutoSlideTemporarily}
+          onWheel={pauseAutoSlideTemporarily}
           className="flex gap-2 overflow-x-auto pb-2 pt-0.5 scrollbar-none scroll-smooth touch-pan-x overscroll-x-contain w-full"
         >
           {INITIAL_CATEGORIES.map((cat) => {
@@ -513,7 +561,7 @@ export default function App() {
             return (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => { setSelectedCategory(cat); pauseAutoSlideTemporarily(); }}
                 className={`tag-chip shrink-0 font-bold text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-all min-h-[48px] inline-flex items-center gap-2 px-3.5 ${
                   isSelected 
                     ? 'bg-[#2B4430] text-[#F1EAD9] shadow-[2px_2px_0_#241F18]' 
