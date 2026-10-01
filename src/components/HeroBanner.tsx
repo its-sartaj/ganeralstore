@@ -181,30 +181,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 <span>WhatsApp</span>
               </a>
             </div>
-
-            {/* Address & Direct Maps link on Signboard */}
-            <div className="mt-2.5 pt-2 border-t border-dashed border-white/20 space-y-1.5 w-full">
-              <a
-                href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open Khurshid General Store location in Google Maps"
-                className="text-[11px] text-[#F1EAD9] hover:text-[#E2A33A] flex items-center justify-between gap-1 bg-black/30 px-2.5 py-2.5 rounded-lg border border-white/15 hover:border-[#E2A33A] transition-all group w-full overflow-hidden min-h-[48px]"
-                title="Open location in Google Maps"
-              >
-                <div className="flex items-center gap-1.5 min-w-0 flex-1 truncate">
-                  <MapPin aria-hidden="true" className="w-3.5 h-3.5 text-[#E2A33A] shrink-0" />
-                  <span className="truncate">{settings.address}</span>
-                </div>
-                <span className="text-[10px] font-mono underline text-[#E2A33A] shrink-0 font-bold ml-1">Maps ↗</span>
-              </a>
-
-              <div className="flex flex-wrap items-center justify-between gap-1 text-[10px] font-mono text-[#DCE6DF] bg-[#152A1C]/80 px-2.5 py-1.5 rounded w-full border border-white/10">
-                <span>🛵 Delivery Charge:</span>
-                <span className="font-bold text-[#E2A33A]">₹{settings.deliveryFee ?? 10} (Within {settings.deliveryRadiusKm ?? 1} KM)</span>
-              </div>
-            </div>
-
           </div>
         </div>
 
