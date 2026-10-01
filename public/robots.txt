@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://khurshidgeneralstore.work.gd/sitemap.xml
+
+# Khurshid General Store - Kirana & Grocery Store, Phenhara, Bihar
