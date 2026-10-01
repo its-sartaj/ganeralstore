@@ -160,27 +160,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 <span className="font-bold text-[#E2A33A] text-right truncate">6:00 AM – 9:00 PM</span>
               </div>
             </div>
-
-            {/* Direct Helpline Buttons */}
-            <div className="mt-2.5 pt-2 sm:pt-3 border-t border-dashed border-white/30 grid grid-cols-2 gap-2 text-[11px] sm:text-xs">
-              <a
-                href={formatTelLink(settings.phone1)}
-                className="flex items-center justify-center gap-1.5 bg-[#F1EAD9] text-[#152A1C] py-2.5 sm:py-3 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-white transition-colors touch-manipulation text-center min-h-[48px]"
-              >
-                <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#2B4430] shrink-0" />
-                <span>Call Store</span>
-              </a>
-
-              <a
-                href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 bg-[#25D366] text-[#0e3d1e] py-2.5 sm:py-3 rounded-[4px_8px_4px_8px] font-bold border border-[#241F18] hover:bg-[#20ba59] transition-colors touch-manipulation text-center min-h-[48px]"
-              >
-                <MessageCircle aria-hidden="true" className="w-3.5 h-3.5 shrink-0" />
-                <span>WhatsApp</span>
-              </a>
-            </div>
           </div>
         </div>
 
