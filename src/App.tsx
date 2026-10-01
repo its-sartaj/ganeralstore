@@ -121,49 +121,111 @@ export default function App() {
   const categoryScrollRef = React.useRef<HTMLDivElement>(null);
   const isUserInteractingRef = useRef(false);
   const autoSlideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const accumulatedScrollRef = useRef(0);
 
-  const pauseAutoSlideTemporarily = () => {
+  const duplicatedCategories = useMemo(() => {
+    return [...INITIAL_CATEGORIES, ...INITIAL_CATEGORIES, ...INITIAL_CATEGORIES];
+  }, []);
+
+  const pauseAutoSlideTemporarily = (duration = 3000) => {
     isUserInteractingRef.current = true;
     if (autoSlideTimeoutRef.current) {
       clearTimeout(autoSlideTimeoutRef.current);
     }
     autoSlideTimeoutRef.current = setTimeout(() => {
+      if (categoryScrollRef.current) {
+        accumulatedScrollRef.current = categoryScrollRef.current.scrollLeft;
+      }
       isUserInteractingRef.current = false;
-    }, 3500);
+    }, duration);
   };
 
   const scrollCategories = (direction: 'left' | 'right') => {
-    pauseAutoSlideTemporarily();
+    pauseAutoSlideTemporarily(3500);
     if (categoryScrollRef.current) {
-      const scrollAmount = direction === 'left' ? -220 : 220;
+      const scrollAmount = direction === 'left' ? -260 : 260;
       categoryScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      setTimeout(() => {
+        if (categoryScrollRef.current) {
+          accumulatedScrollRef.current = categoryScrollRef.current.scrollLeft;
+        }
+      }, 400);
     }
   };
 
-  // Auto-slide categories carousel smoothly with loop-around
+  // Continuous slow, buttery-smooth animated slider (60 FPS, silky infinite loop)
   useEffect(() => {
+    const el = categoryScrollRef.current;
+    if (!el) return;
+
     if (typeof window === 'undefined') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const interval = setInterval(() => {
-      if (isUserInteractingRef.current || document.hidden) return;
-      
-      const el = categoryScrollRef.current;
-      if (!el) return;
+    let isVisible = true;
+    let observer: IntersectionObserver | null = null;
+    try {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          isVisible = entry.isIntersecting;
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(el);
+    } catch (e) {}
 
-      const maxScroll = el.scrollWidth - el.clientWidth;
-      if (maxScroll <= 0) return;
-
-      // If reached end, scroll back smoothly to start
-      if (el.scrollLeft >= maxScroll - 20) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        el.scrollBy({ left: 200, behavior: 'smooth' });
+    const getSingleSetWidth = () => {
+      const first0 = el.querySelector('[data-cat-index="0"]') as HTMLElement | null;
+      const second0 = el.querySelector(`[data-cat-index="${INITIAL_CATEGORIES.length}"]`) as HTMLElement | null;
+      if (first0 && second0) {
+        return second0.offsetLeft - first0.offsetLeft;
       }
-    }, 2800);
+      return el.scrollWidth / 3;
+    };
+
+    // Center in the middle set on initial render
+    const initTimer = setTimeout(() => {
+      const singleSetWidth = getSingleSetWidth();
+      if (singleSetWidth > 100 && el.scrollLeft < 10) {
+        el.scrollLeft = singleSetWidth;
+        accumulatedScrollRef.current = singleSetWidth;
+      }
+    }, 150);
+
+    let lastTime = performance.now();
+    let animationFrameId: number;
+    const speed = 28; // 28 pixels per second for slow, readable, gentle animation
+
+    const animate = (currentTime: number) => {
+      const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
+      lastTime = currentTime;
+
+      if (!isUserInteractingRef.current && isVisible && !document.hidden) {
+        const singleSetWidth = getSingleSetWidth();
+        if (singleSetWidth > 100) {
+          accumulatedScrollRef.current += speed * delta;
+          
+          if (accumulatedScrollRef.current >= singleSetWidth * 2) {
+            accumulatedScrollRef.current -= singleSetWidth;
+          } else if (accumulatedScrollRef.current <= 0) {
+            accumulatedScrollRef.current += singleSetWidth;
+          }
+
+          el.scrollLeft = accumulatedScrollRef.current;
+        }
+      } else {
+        // Keep in sync during manual user touch/scroll
+        accumulatedScrollRef.current = el.scrollLeft;
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
-      clearInterval(interval);
+      cancelAnimationFrame(animationFrameId);
+      clearTimeout(initTimer);
+      if (observer) observer.disconnect();
       if (autoSlideTimeoutRef.current) {
         clearTimeout(autoSlideTimeoutRef.current);
       }
@@ -542,17 +604,17 @@ export default function App() {
           </div>
         </div>
 
-        {/* Scrollable Categories List (Auto-slides smoothly) */}
+        {/* Scrollable Categories List (Continuous Slow Animated Slider) */}
         <div 
           ref={categoryScrollRef}
           onMouseEnter={() => { isUserInteractingRef.current = true; }}
           onMouseLeave={() => { isUserInteractingRef.current = false; }}
           onTouchStart={() => { isUserInteractingRef.current = true; }}
-          onTouchEnd={pauseAutoSlideTemporarily}
-          onWheel={pauseAutoSlideTemporarily}
-          className="flex gap-2 overflow-x-auto pb-2 pt-0.5 scrollbar-none scroll-smooth touch-pan-x overscroll-x-contain w-full"
+          onTouchEnd={() => pauseAutoSlideTemporarily(2000)}
+          onWheel={() => pauseAutoSlideTemporarily(2000)}
+          className="flex gap-2 overflow-x-auto pb-2 pt-0.5 scrollbar-none touch-pan-x overscroll-x-contain w-full select-none"
         >
-          {INITIAL_CATEGORIES.map((cat) => {
+          {duplicatedCategories.map((cat, index) => {
             const count = cat === 'All Items' 
               ? products.length 
               : products.filter(p => p.category === cat).length;
@@ -560,8 +622,9 @@ export default function App() {
 
             return (
               <button
-                key={cat}
-                onClick={() => { setSelectedCategory(cat); pauseAutoSlideTemporarily(); }}
+                key={`${cat}-${index}`}
+                data-cat-index={index}
+                onClick={() => { setSelectedCategory(cat); pauseAutoSlideTemporarily(3500); }}
                 className={`tag-chip shrink-0 font-bold text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-all min-h-[48px] inline-flex items-center gap-2 px-3.5 ${
                   isSelected 
                     ? 'bg-[#2B4430] text-[#F1EAD9] shadow-[2px_2px_0_#241F18]' 
