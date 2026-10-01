@@ -41,6 +41,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
           {/* Main Display Headline (Single H1 on Page) */}
           <h1 className="font-display text-xl xs:text-2xl sm:text-4xl lg:text-5xl font-bold text-[#152A1C] leading-[1.2] sm:leading-[1.1] tracking-tight break-words">
+            <span className="sr-only">Khurshid General Store — </span>
             Ration se lekar <em className="not-italic text-[#B14B2C] underline decoration-[#C68A2E] decoration-wavy decoration-2">rozmarra</em> tak, sab kuch yahin.
           </h1>
 
