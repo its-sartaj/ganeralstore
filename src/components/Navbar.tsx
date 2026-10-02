@@ -30,20 +30,20 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-50 w-full bg-[#F1EAD9]/95 backdrop-blur-md border-b-[1.5px] border-[#241F18] shadow-xs">
       
       {/* Top Notice / Contact Strip */}
-      <div className="bg-[#152A1C] text-[#DCE6DF] text-xs py-1.5 px-3 border-b border-[#241F18]">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <div className="bg-[#152A1C] text-[#DCE6DF] text-xs py-1 sm:py-1.5 px-2.5 sm:px-3 border-b border-[#241F18] top-announcement-bar">
+        <div className="max-w-7xl mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-2 gap-y-1.5">
           
           {/* Left info */}
-          <div className="flex items-center gap-1.5 font-medium truncate">
-            <span className="w-2 h-2 rounded-full bg-[#55642F] shrink-0" />
+          <div className="flex items-center gap-1.5 font-medium min-w-0 max-w-full">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#55642F] shrink-0" />
             <span className="hidden sm:inline truncate">🏪 {settings.tagline || 'Roz ka saaman, apni gali se'} |</span>
-            <span className="bg-[#FFE082]/20 text-[#FFE082] border border-[#FFE082]/40 px-2 py-0.5 rounded-full font-bold text-[10px] sm:text-[11px] shrink-0">
+            <span className="bg-[#FFE082]/20 text-[#FFE082] border border-[#FFE082]/40 px-2 py-0.5 rounded-full font-bold text-[10px] sm:text-[11px] whitespace-normal sm:whitespace-nowrap leading-tight">
               🛵 Delivery: Within {settings.deliveryRadiusKm ?? 1} KM (₹{settings.deliveryFee ?? 10})
             </span>
           </div>
 
           {/* Right contact links */}
-          <div className="flex items-center gap-2 sm:gap-3 text-xs shrink-0 font-mono">
+          <div className="flex items-center gap-1.5 sm:gap-3 text-xs shrink-0 font-mono">
             {/* Google Maps Link Button (Hidden on tiny screens to prevent wrap) */}
             <a
               href={sanitizeUrl(settings.googleMapsUrl, 'https://maps.app.goo.gl/eYQJgkGnchc1DfPr8')}
@@ -59,23 +59,23 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <a 
               href={formatTelLink(settings.phone1)} 
-              className="flex items-center gap-1 text-[#F1EAD9] hover:text-[#FFE082] transition-colors py-1 px-2 rounded-md min-h-[48px] touch-manipulation"
+              className="flex items-center gap-1 text-[#F1EAD9] hover:text-[#FFE082] transition-colors py-1 px-1.5 sm:px-2 rounded-md sm:min-h-[48px] touch-manipulation text-[11px] sm:text-xs font-bold sm:font-normal"
               title="Call Store"
               aria-label={`Call Khurshid General Store at ${settings.phone1}`}
             >
-              <PhoneCall aria-hidden="true" className="w-3.5 h-3.5 text-[#FFE082]" />
-              <span className="hidden xs:inline">{settings.phone1}</span>
-              <span className="xs:hidden">Call</span>
+              <PhoneCall aria-hidden="true" className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#FFE082] shrink-0" />
+              <span className="hidden sm:inline">{settings.phone1}</span>
+              <span className="sm:hidden">Call</span>
             </a>
 
             <a 
               href={`https://wa.me/91${cleanPhoneNumber(settings.phone1)}`} 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-[#0e3d1e] px-3 py-1.5 rounded-full font-bold transition-colors min-h-[48px] touch-manipulation"
+              className="flex items-center gap-1 bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-[#0e3d1e] px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full font-bold transition-colors sm:min-h-[48px] touch-manipulation text-[11px] sm:text-xs"
               aria-label="Chat with Khurshid General Store on WhatsApp"
             >
-              <MessageCircle aria-hidden="true" className="w-3.5 h-3.5" />
+              <MessageCircle aria-hidden="true" className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span>WhatsApp</span>
             </a>
           </div>
