@@ -121,12 +121,75 @@ export const Footer: React.FC<FooterProps> = ({
                 <span className="text-[#FFE082] font-bold">6:00 AM – 9:00 PM</span>
               </li>
             </ul>
+
+            {/* Local Areas Served Tags for Google Local Search */}
+            <div className="pt-2">
+              <div className="text-xs font-bold text-[#FFE082] mb-1.5 flex items-center gap-1.5">
+                <MapPin aria-hidden="true" className="w-3.5 h-3.5" />
+                <span>Service Areas in Phenhara:</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5 text-[11px] font-mono">
+                <span className="bg-white/10 px-2 py-0.5 rounded text-[#DCE6DF] border border-white/10">Ward No. 11</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded text-[#DCE6DF] border border-white/10">Birta Masjid</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded text-[#DCE6DF] border border-white/10">Rupaulia Road</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded text-[#DCE6DF] border border-white/10">Phenhara Bazaar</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded text-[#DCE6DF] border border-white/10">East Champaran (845430)</span>
+              </div>
+            </div>
           </div>
 
         </div>
 
+        {/* Local SEO FAQs Accordion (Crawled by Googlebot for FAQ Rich Snippets) */}
+        <section aria-label="Frequently Asked Questions" className="mt-8 pt-6 border-t border-white/15">
+          <h3 className="font-display text-sm sm:text-base font-bold text-[#FFE082] mb-3 flex items-center gap-2">
+            <span>❓ Frequently Asked Questions (अक्सर पूछे जाने वाले सवाल)</span>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <details className="bg-white/5 rounded-xl border border-white/10 p-3 cursor-pointer group">
+              <summary className="text-xs sm:text-sm font-bold text-white flex items-center justify-between list-none">
+                <span>Dukaan se home delivery kaise milti hai?</span>
+                <span className="text-[#FFE082] group-open:rotate-180 transition-transform font-mono ml-2">▼</span>
+              </summary>
+              <p className="text-xs text-[#DCE6DF] mt-2 leading-relaxed font-sans">
+                Khurshid General Store se 1 KM ke daayre mein matra ₹10 delivery charge par instant WhatsApp delivery uplabdh hai. Aap WhatsApp par apni saamaan ki list bhejkar bhi order kar sakte hain.
+              </p>
+            </details>
+
+            <details className="bg-white/5 rounded-xl border border-white/10 p-3 cursor-pointer group">
+              <summary className="text-xs sm:text-sm font-bold text-white flex items-center justify-between list-none">
+                <span>Dukaan kahan sthit hai? (Store Location)</span>
+                <span className="text-[#FFE082] group-open:rotate-180 transition-transform font-mono ml-2">▼</span>
+              </summary>
+              <p className="text-xs text-[#DCE6DF] mt-2 leading-relaxed font-sans">
+                Dukaan Rupaulia Birta Road, Near Birta Masjid, Ward No. 11, Phenhara, East Champaran, Bihar 845430 par sthit hai. Google Maps par exact location ke liye upar diye gaye Maps link par click karein.
+              </p>
+            </details>
+
+            <details className="bg-white/5 rounded-xl border border-white/10 p-3 cursor-pointer group">
+              <summary className="text-xs sm:text-sm font-bold text-white flex items-center justify-between list-none">
+                <span>Kaun-kaun se payment tarike uplabdh hain?</span>
+                <span className="text-[#FFE082] group-open:rotate-180 transition-transform font-mono ml-2">▼</span>
+              </summary>
+              <p className="text-xs text-[#DCE6DF] mt-2 leading-relaxed font-sans">
+                Cash on Delivery (COD) ke alawa PhonePe, Google Pay, Paytm, BHIM aur sabhi UPI QR Code ke madhyam se aasan payment ki suvidha uplabdh hai.
+              </p>
+            </details>
+
+            <details className="bg-white/5 rounded-xl border border-white/10 p-3 cursor-pointer group">
+              <summary className="text-xs sm:text-sm font-bold text-white flex items-center justify-between list-none">
+                <span>Dukaan par kaun sa ration aur saamaan milta hai?</span>
+                <span className="text-[#FFE082] group-open:rotate-180 transition-transform font-mono ml-2">▼</span>
+              </summary>
+              <p className="text-xs text-[#DCE6DF] mt-2 leading-relaxed font-sans">
+                Taaza Chakki Atta, Arhar/Masoor Dals, Fortune Sarson Tel, Tata Namak, MDH/Everest Masale, Chawal, Dairy products, Breads, Biscuits, Chai patti aur sabhi daily household ration wholesale jaisi kifaayati rates par milta hai.
+              </p>
+            </details>
+          </div>
+        </section>
+
         {/* Bottom copyright & Discreet Merchant Access */}
-        <div className="mt-8 pt-4 border-t border-dashed border-white/20 flex flex-col sm:flex-row items-center justify-between text-xs text-[#AFC0B4] gap-2">
+        <div className="mt-6 pt-4 border-t border-dashed border-white/20 flex flex-col sm:flex-row items-center justify-between text-xs text-[#AFC0B4] gap-2">
           <div className="font-hand">
             © {new Date().getFullYear()} {settings.storeName}. Order karein, payment WhatsApp par confirm karein.
           </div>
