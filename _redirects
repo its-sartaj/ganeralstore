@@ -1,0 +1,5 @@
+# HTTP to HTTPS 301 Permanent Redirect
+http://* https://:splat 301!
+
+# SPA Routing Fallback
+/* /index.html 200

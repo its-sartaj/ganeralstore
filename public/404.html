@@ -3,23 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    
+    <!-- Automatic HTTP to HTTPS Immediate Client Redirection -->
+    <script>
+      if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        location.replace('https://' + location.hostname + location.pathname + location.search + location.hash);
+      }
+    </script>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
     <title>Khurshid General Store — Kirana &amp; Grocery Store in Phenhara, Bihar</title>
     <meta name="description" content="Khurshid General Store (खुरशीद जनरल स्टोर) - Best Kirana &amp; Grocery Store in Phenhara, Bihar. Call: 9162288060, 8587079786." />
     <link rel="canonical" href="https://khurshidgeneralstore.work.gd/" />
 
-    <!-- Favicon & PWA App Icons -->
-    <link rel="icon" href="./favicon.ico" sizes="48x48" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="icon" type="image/png" sizes="48x48" href="./favicon-48x48.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
-    <link rel="manifest" href="./site.webmanifest" />
+    <!-- Favicon & PWA App Icons (Absolute HTTPS Paths) -->
+    <link rel="icon" href="https://khurshidgeneralstore.work.gd/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="https://khurshidgeneralstore.work.gd/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="https://khurshidgeneralstore.work.gd/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://khurshidgeneralstore.work.gd/apple-touch-icon.png" />
+    <link rel="manifest" href="https://khurshidgeneralstore.work.gd/site.webmanifest" />
     <meta name="theme-color" content="#2B4430" />
 
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="./assets/index.css?v=20261001_perf100" />
+    <link rel="stylesheet" href="https://khurshidgeneralstore.work.gd/assets/index.css?v=20261001_perf100" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Space+Grotesk:wght@600;700&display=swap" media="print" onload="this.media='all'" />
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Space+Grotesk:wght@600;700&display=swap" />
@@ -38,7 +47,7 @@
   </head>
   <body class="bg-[#F1EAD9] text-[#241F18] font-sans antialiased selection:bg-[#2B4430] selection:text-[#F1EAD9]">
     <div id="root"></div>
-    <script type="module" crossorigin src="./assets/index.js?v=20261001_perf100"></script>
-    <script defer src="./assets/firebase-sync.js?v=20261001_perf100"></script>
+    <script type="module" crossorigin src="https://khurshidgeneralstore.work.gd/assets/index.js?v=20261001_perf100"></script>
+    <script defer src="https://khurshidgeneralstore.work.gd/assets/firebase-sync.js?v=20261001_perf100"></script>
   </body>
 </html>

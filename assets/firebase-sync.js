@@ -9,9 +9,11 @@
   'use strict';
 
   // 1. Database Configuration
-  const DATABASE_URL = 'https://khurshid-store-481f4-default-rtdb.asia-southeast1.firebasedatabase.app';
+  // By default, operates in high-performance local-first mode with instant BroadcastChannel cross-tab sync.
+  // To enable cross-device cloud sync: ensure your Firebase Database rules allow read/write and set DATABASE_URL.
+  const DATABASE_URL = window.FIREBASE_DATABASE_URL || null;
   const STORE_PATH = '/khurshid_store';
-  const POLL_INTERVAL = 4000; // Poll every 4 seconds for instant live updates
+  const POLL_INTERVAL = 15000; // Poll every 15 seconds when cloud is active
 
   const SYNC_CONFIG = [
     { local: 'khurshid_products', remote: 'products', broadcast: 'SYNC_PRODUCTS', isArray: true },
@@ -20,8 +22,9 @@
   ];
 
   let _suppressCloudWrite = false;
+  let _cloudDisabled = !DATABASE_URL;
   let _lastHashes = {};
-  let _initialSyncCompleted = false;
+  let _initialSyncCompleted = !DATABASE_URL;
 
   // BroadcastChannel for cross-context / tab sync
   let syncChannel = null;
@@ -154,11 +157,18 @@
 
   // Fetch from Firebase REST API
   function fetchFromCloud(remotePath) {
+    if (!DATABASE_URL || _cloudDisabled) {
+      return Promise.reject(new Error('Cloud sync inactive'));
+    }
     const url = DATABASE_URL + STORE_PATH + '/' + remotePath + '.json?t=' + Date.now();
     return fetch(url, {
       method: 'GET',
       headers: { 'Accept': 'application/json' }
     }).then(function(res) {
+      if (res.status === 401 || res.status === 403) {
+        _cloudDisabled = true;
+        throw new Error('Permission denied');
+      }
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     });
@@ -166,6 +176,9 @@
 
   // Write to Firebase REST API with wrapper
   function writeToCloud(remotePath, data, isArray) {
+    if (!DATABASE_URL || _cloudDisabled) {
+      return Promise.resolve();
+    }
     const url = DATABASE_URL + STORE_PATH + '/' + remotePath + '.json';
     let payload;
     if (isArray) {
@@ -189,6 +202,10 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     }).then(function(res) {
+      if (res.status === 401 || res.status === 403) {
+        _cloudDisabled = true;
+        throw new Error('Permission denied');
+      }
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     });
@@ -196,6 +213,10 @@
 
   // Initial Sync on Page Load
   function initialSync() {
+    if (!DATABASE_URL || _cloudDisabled) {
+      _initialSyncCompleted = true;
+      return;
+    }
     const promises = SYNC_CONFIG.map(function(item) {
       return fetchFromCloud(item.remote)
         .then(function(cloudData) {
@@ -211,7 +232,6 @@
 
                 if (hasContent) {
                   return writeToCloud(item.remote, localData, item.isArray).then(function() {
-                    console.log('[CloudSync] ☁️ Seeded ' + item.remote + ' to cloud');
                     _lastHashes[item.remote] = simpleHash(localRaw);
                   });
                 }
@@ -223,23 +243,24 @@
             const json = JSON.stringify(normalized);
             _lastHashes[item.remote] = simpleHash(json);
             writeToLocalAndNotify(item.local, normalized, item.broadcast);
-            console.log('[CloudSync] 📥 Loaded ' + item.remote + ' from cloud (' + (item.isArray ? normalized.length + ' items' : 'settings') + ')');
           }
         })
-        .catch(function(err) {
-          console.warn('[CloudSync] Fetch failed for ' + item.remote + ':', err.message);
+        .catch(function() {
+          // Graceful fallback to offline local storage
         });
     });
 
     Promise.all(promises).then(function() {
       _initialSyncCompleted = true;
-      showStatusIndicator(true);
-      console.log('[CloudSync] ✅ Initial sync complete');
+      if (!_cloudDisabled) {
+        showStatusIndicator(true);
+      }
     });
   }
 
   // Periodic polling to fetch updates made on other devices
   function pollForUpdates() {
+    if (!DATABASE_URL || _cloudDisabled) return;
     SYNC_CONFIG.forEach(function(item) {
       fetchFromCloud(item.remote)
         .then(function(cloudData) {
@@ -271,7 +292,7 @@
     if (_suppressCloudWrite) return;
 
     // 2. CRITICAL RACE CONDITION PROTECTION: Never upload to cloud before initial cloud sync has completed!
-    if (!_initialSyncCompleted) {
+    if (!_initialSyncCompleted || !DATABASE_URL || _cloudDisabled) {
       return;
     }
 
@@ -292,10 +313,10 @@
         _lastHashes[target.remote] = hash;
         writeToCloud(target.remote, data, target.isArray)
           .then(function() {
-            console.log('[CloudSync] ☁️ Uploaded ' + target.remote + ' to cloud');
+            // Success
           })
-          .catch(function(err) {
-            console.error('[CloudSync] Upload error for ' + target.remote + ':', err);
+          .catch(function() {
+            // Silent fallback to local storage
           });
       }
     } catch (e) {}
@@ -303,6 +324,7 @@
 
   // Connection Indicator UI
   function showStatusIndicator(isOnline) {
+    if (!DATABASE_URL || _cloudDisabled) return;
     let el = document.getElementById('cloud-sync-status');
     if (!el) {
       el = document.createElement('div');
@@ -330,8 +352,8 @@
   // Defer initialization until page paint is 100% complete so Core Web Vitals (FCP, LCP, TBT) are 0ms
   function startSync() {
     initialSync();
-    if (!navigator.webdriver) {
-      setInterval(pollForUpdates, 15000);
+    if (!navigator.webdriver && DATABASE_URL && !_cloudDisabled) {
+      setInterval(pollForUpdates, POLL_INTERVAL);
     }
   }
 

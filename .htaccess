@@ -1,0 +1,26 @@
+# ==============================================================
+# Security & HTTPS Redirection Rules for Khurshid General Store
+# ==============================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS 301 Permanent Redirect
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Content Security Policy & Security Headers
+<IfModule mod_headers.c>
+  # Automatically upgrade all insecure HTTP requests to HTTPS
+  Header always set Content-Security-Policy "upgrade-insecure-requests;"
+  
+  # HTTP Strict Transport Security (HSTS)
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  
+  # Prevent MIME type sniffing
+  Header set X-Content-Type-Options "nosniff"
+  
+  # Referrer Policy
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

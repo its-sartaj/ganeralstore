@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     
+    <!-- Automatic HTTP to HTTPS Immediate Client Redirection -->
+    <script>
+      if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        location.replace('https://' + location.hostname + location.pathname + location.search + location.hash);
+      }
+    </script>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
     <!-- Primary SEO Meta Tags -->
     <title>Khurshid General Store — Kirana &amp; Grocery Store, Phenhara</title>
     <meta name="title" content="Khurshid General Store — Kirana &amp; Grocery Store, Phenhara" />
@@ -43,12 +51,12 @@
     <meta name="twitter:image" content="https://khurshidgeneralstore.work.gd/apple-touch-icon.png" />
     <meta name="twitter:image:alt" content="Khurshid General Store - Kirana &amp; Grocery Store in Phenhara, Bihar" />
 
-    <!-- Favicon & PWA App Icons -->
-    <link rel="icon" href="./favicon.ico" sizes="48x48" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="icon" type="image/png" sizes="48x48" href="./favicon-48x48.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
-    <link rel="manifest" href="./site.webmanifest" />
+    <!-- Favicon & PWA App Icons (Absolute HTTPS Paths) -->
+    <link rel="icon" href="https://khurshidgeneralstore.work.gd/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="https://khurshidgeneralstore.work.gd/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="https://khurshidgeneralstore.work.gd/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://khurshidgeneralstore.work.gd/apple-touch-icon.png" />
+    <link rel="manifest" href="https://khurshidgeneralstore.work.gd/site.webmanifest" />
     <meta name="theme-color" content="#2B4430" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -63,8 +71,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Production Stylesheet -->
-    <link rel="stylesheet" href="./assets/index.css?v=20261001_perf100" />
+    <!-- Production Stylesheet (Absolute HTTPS Path) -->
+    <link rel="stylesheet" href="https://khurshidgeneralstore.work.gd/assets/index.css?v=20261001_perf100" />
 
     <!-- Streamlined Non-Blocking Google Fonts (Only required weights) with font-display: swap -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Space+Grotesk:wght@600;700&display=swap" media="print" onload="this.media='all'" />
@@ -236,10 +244,10 @@
       </main>
     </div>
 
-    <!-- Production Optimized Application Bundle (Module, Deferred by default) -->
-    <script type="module" crossorigin src="./assets/index.js?v=20261001_perf100"></script>
+    <!-- Production Optimized Application Bundle (Absolute HTTPS Paths) -->
+    <script type="module" crossorigin src="https://khurshidgeneralstore.work.gd/assets/index.js?v=20261001_perf100"></script>
     <!-- Cloud Sync Layer -->
-    <script defer src="./assets/firebase-sync.js?v=20261001_perf100"></script>
+    <script defer src="https://khurshidgeneralstore.work.gd/assets/firebase-sync.js?v=20261001_perf100"></script>
     <noscript>
       <div style="text-align:center; padding:40px 20px; font-family:sans-serif;">
         <h1>Khurshid General Store</h1>
