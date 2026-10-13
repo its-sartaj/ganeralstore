@@ -9,7 +9,7 @@
           "value": "http"
         }
       ],
-      "destination": "https://khurshidgeneralstore.work.gd/$1",
+      "destination": "https://khurshidgeneralstore.publicvm.com/$1",
       "permanent": true
     }
   ],
