@@ -1,7 +1,8 @@
+# 🛒 Khurshid General Store (खुरशीद जनरल स्टोर)
 
 > **"Roz ka Saaman, Ghar Tak"** — Modern Digital Kirana & Billing Platform.
 
-[![Live Website](https://img.shields.io/badge/Live_Website-Online-2ea44f?style=for-the-badge&logo=github)](https://its-sartaj.github.io/ganeralstore/)
+[![Live Website](https://img.shields.io/badge/Live_Website-Online-2ea44f?style=for-the-badge&logo=github)](https://khurshidgeneralstore.publicvm.com/)
 [![React 19](https://img.shields.io/badge/React-19.0-blue?style=for-the-badge&logo=react)](https://react.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38bdf8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178c6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -11,7 +12,7 @@
 ## 🌐 Live Website
 
 Access the live store here:  
-👉 **[https://its-sartaj.github.io/ganeralstore/](https://its-sartaj.github.io/ganeralstore/)**
+👉 **[https://khurshidgeneralstore.publicvm.com/](https://khurshidgeneralstore.publicvm.com/)**
 
 ---
 
