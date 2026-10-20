@@ -1,10 +1,13 @@
 {
-  "name": "Khurshid General Store",
+  "name": "Khurshid General Store (खुरशीद जनरल स्टोर)",
   "short_name": "Khurshid Store",
-  "description": "Kirana & Grocery Store in Phenhara, Bihar - Roz ka Saaman, Ghar Tak",
+  "description": "Best Kirana & Grocery Store in Phenhara, East Champaran, Bihar - Roz ka Saaman, Ghar Tak",
   "start_url": "https://khurshidgeneralstore.publicvm.com/",
   "scope": "https://khurshidgeneralstore.publicvm.com/",
   "display": "standalone",
+  "orientation": "portrait-primary",
+  "lang": "hi-IN",
+  "categories": ["shopping", "food", "lifestyle"],
   "background_color": "#F1EAD9",
   "theme_color": "#2B4430",
   "icons": [

@@ -185,6 +185,26 @@ export const Footer: React.FC<FooterProps> = ({
                 Taaza Chakki Atta, Arhar/Masoor Dals, Fortune Sarson Tel, Tata Namak, MDH/Everest Masale, Chawal, Dairy products, Breads, Biscuits, Chai patti aur sabhi daily household ration wholesale jaisi kifaayati rates par milta hai.
               </p>
             </details>
+
+            <details className="bg-white/5 rounded-xl border border-white/10 p-3 cursor-pointer group">
+              <summary className="text-xs sm:text-sm font-bold text-white flex items-center justify-between list-none">
+                <span>Kya yahan computerized print bill milta hai?</span>
+                <span className="text-[#FFE082] group-open:rotate-180 transition-transform font-mono ml-2">▼</span>
+              </summary>
+              <p className="text-xs text-[#DCE6DF] mt-2 leading-relaxed font-sans">
+                Haan, humare yahan computerized POS billing machine se retail print memo aur digital bill diya jata hai jisme har item ka rate aur total savings saaf darj hoti hai.
+              </p>
+            </details>
+
+            <details className="bg-white/5 rounded-xl border border-white/10 p-3 cursor-pointer group">
+              <summary className="text-xs sm:text-sm font-bold text-white flex items-center justify-between list-none">
+                <span>Shadi-byah ya dawat ke liye bulk ration milta hai?</span>
+                <span className="text-[#FFE082] group-open:rotate-180 transition-transform font-mono ml-2">▼</span>
+              </summary>
+              <p className="text-xs text-[#DCE6DF] mt-2 leading-relaxed font-sans">
+                Haan, shadi-byah aur samajik karyakramon ke liye wholesale kifaayati rates par bulk ration uplabdh karwaya jata hai. Vishesh discount ke liye 9162288060 par sampark karein.
+              </p>
+            </details>
           </div>
         </section>
 

@@ -3,11 +3,15 @@ Allow: /
 Allow: /assets/
 Allow: /favicon.ico
 Allow: /favicon.svg
+Allow: /favicon-48x48.png
+Allow: /favicon-512x512.png
+Allow: /apple-touch-icon.png
 Allow: /site.webmanifest
 Allow: /sitemap.xml
 
 User-agent: Googlebot
 Allow: /
+Allow: /assets/
 
 User-agent: Googlebot-Image
 Allow: /
@@ -16,6 +20,12 @@ Allow: /assets/
 User-agent: Bingbot
 Allow: /
 
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
 Sitemap: https://khurshidgeneralstore.publicvm.com/sitemap.xml
 Host: https://khurshidgeneralstore.publicvm.com
-# Khurshid General Store - Best Kirana & Grocery Store in Phenhara, East Champaran, Bihar
+# Khurshid General Store - Best Kirana and Grocery Store in Phenhara, East Champaran, Bihar (845430)

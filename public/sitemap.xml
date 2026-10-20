@@ -4,7 +4,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://khurshidgeneralstore.publicvm.com/</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="hi" href="https://khurshidgeneralstore.publicvm.com/" />
@@ -12,14 +12,20 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://khurshidgeneralstore.publicvm.com/" />
     <image:image>
       <image:loc>https://khurshidgeneralstore.publicvm.com/apple-touch-icon.png</image:loc>
-      <image:title>Khurshid General Store — Kirana and Grocery Store in Phenhara, Bihar</image:title>
-      <image:caption>Best Kirana and Grocery Store in Phenhara, East Champaran, Bihar. Fresh ration, atta, dals, mustard oil, spices and daily household essentials with WhatsApp delivery.</image:caption>
+      <image:title>Khurshid General Store (खुरशीद जनरल स्टोर) — Kirana &amp; Grocery Store in Phenhara, Bihar</image:title>
+      <image:caption>Best Kirana and Grocery Store in Phenhara, East Champaran, Bihar (Near Birta Masjid, Ward 11). Fresh chakki atta, pulses, mustard oil, spices and daily household essentials with WhatsApp delivery.</image:caption>
+      <image:geo_location>Phenhara, Bihar, India</image:geo_location>
+    </image:image>
+    <image:image>
+      <image:loc>https://khurshidgeneralstore.publicvm.com/favicon-512x512.png</image:loc>
+      <image:title>Khurshid General Store Signboard &amp; Grocery Storefront</image:title>
+      <image:caption>Quality daily kirana essentials and computerized billing in Phenhara.</image:caption>
       <image:geo_location>Phenhara, Bihar, India</image:geo_location>
     </image:image>
     <image:image>
       <image:loc>https://khurshidgeneralstore.publicvm.com/favicon.svg</image:loc>
-      <image:title>Khurshid General Store Official Logo</image:title>
-      <image:caption>Khurshid General Store - Roz ka Saaman, Ghar Tak</image:caption>
+      <image:title>Khurshid General Store Official Storefront Logo</image:title>
+      <image:caption>Roz ka Saaman, Ghar Tak — Khurshid General Store Phenhara</image:caption>
       <image:geo_location>Phenhara, Bihar, India</image:geo_location>
     </image:image>
   </url>
