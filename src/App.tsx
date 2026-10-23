@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { 
   ChevronLeft,
   ChevronRight,
@@ -119,118 +119,35 @@ export default function App() {
   });
   const [activeInvoiceForView, setActiveInvoiceForView] = useState<Invoice | null>(null);
   const categoryScrollRef = React.useRef<HTMLDivElement>(null);
-  const isUserInteractingRef = useRef(false);
-  const autoSlideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const accumulatedScrollRef = useRef(0);
+  const lastSyncPayloadRef = useRef<{
+    products: string;
+    settings: string;
+    invoices: string;
+    cart: string;
+  }>({
+    products: '',
+    settings: '',
+    invoices: '',
+    cart: ''
+  });
+  const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
 
-  const duplicatedCategories = useMemo(() => {
-    return [...INITIAL_CATEGORIES, ...INITIAL_CATEGORIES, ...INITIAL_CATEGORIES];
+  // Initialize sync hashes on mount to prevent redundant writes or broadcasts
+  useEffect(() => {
+    try {
+      lastSyncPayloadRef.current.products = JSON.stringify(products);
+      lastSyncPayloadRef.current.settings = JSON.stringify(settings);
+      lastSyncPayloadRef.current.invoices = JSON.stringify(invoices);
+      lastSyncPayloadRef.current.cart = JSON.stringify(cart);
+    } catch (e) {}
   }, []);
 
-  const pauseAutoSlideTemporarily = (duration = 3000) => {
-    isUserInteractingRef.current = true;
-    if (autoSlideTimeoutRef.current) {
-      clearTimeout(autoSlideTimeoutRef.current);
-    }
-    autoSlideTimeoutRef.current = setTimeout(() => {
-      if (categoryScrollRef.current) {
-        accumulatedScrollRef.current = categoryScrollRef.current.scrollLeft;
-      }
-      isUserInteractingRef.current = false;
-    }, duration);
-  };
-
   const scrollCategories = (direction: 'left' | 'right') => {
-    pauseAutoSlideTemporarily(3500);
     if (categoryScrollRef.current) {
       const scrollAmount = direction === 'left' ? -260 : 260;
       categoryScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      setTimeout(() => {
-        if (categoryScrollRef.current) {
-          accumulatedScrollRef.current = categoryScrollRef.current.scrollLeft;
-        }
-      }, 400);
     }
   };
-
-  // Continuous slow, buttery-smooth animated slider (60 FPS, silky infinite loop)
-  useEffect(() => {
-    const el = categoryScrollRef.current;
-    if (!el) return;
-
-    if (typeof window === 'undefined') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    let isVisible = true;
-    let observer: IntersectionObserver | null = null;
-    try {
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          isVisible = entry.isIntersecting;
-        },
-        { threshold: 0.05 }
-      );
-      observer.observe(el);
-    } catch (e) {}
-
-    const getSingleSetWidth = () => {
-      const first0 = el.querySelector('[data-cat-index="0"]') as HTMLElement | null;
-      const second0 = el.querySelector(`[data-cat-index="${INITIAL_CATEGORIES.length}"]`) as HTMLElement | null;
-      if (first0 && second0) {
-        return second0.offsetLeft - first0.offsetLeft;
-      }
-      return el.scrollWidth / 3;
-    };
-
-    // Center in the middle set on initial render
-    const initTimer = setTimeout(() => {
-      const singleSetWidth = getSingleSetWidth();
-      if (singleSetWidth > 100 && el.scrollLeft < 10) {
-        el.scrollLeft = singleSetWidth;
-        accumulatedScrollRef.current = singleSetWidth;
-      }
-    }, 150);
-
-    let lastTime = performance.now();
-    let animationFrameId: number;
-    const speed = 28; // 28 pixels per second for slow, readable, gentle animation
-
-    const animate = (currentTime: number) => {
-      const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
-      lastTime = currentTime;
-
-      if (!isUserInteractingRef.current && isVisible && !document.hidden) {
-        const singleSetWidth = getSingleSetWidth();
-        if (singleSetWidth > 100) {
-          accumulatedScrollRef.current += speed * delta;
-          
-          if (accumulatedScrollRef.current >= singleSetWidth * 2) {
-            accumulatedScrollRef.current -= singleSetWidth;
-          } else if (accumulatedScrollRef.current <= 0) {
-            accumulatedScrollRef.current += singleSetWidth;
-          }
-
-          el.scrollLeft = accumulatedScrollRef.current;
-        }
-      } else {
-        // Keep in sync during manual user touch/scroll
-        accumulatedScrollRef.current = el.scrollLeft;
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animationFrameId = requestAnimationFrame(animate);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      clearTimeout(initTimer);
-      if (observer) observer.disconnect();
-      if (autoSlideTimeoutRef.current) {
-        clearTimeout(autoSlideTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // Hash & Keyboard shortcut listener for store owner / admin access
   useEffect(() => {
@@ -260,22 +177,39 @@ export default function App() {
     };
   }, []);
 
-  // Cross-Tab Real-time Broadcast & Synchronization
+  // Cross-Tab Real-time Broadcast & Synchronization (with Echo Prevention)
   useEffect(() => {
     let channel: BroadcastChannel | null = null;
     try {
       if (typeof BroadcastChannel !== 'undefined') {
         channel = new BroadcastChannel('khurshid_store_channel');
+        broadcastChannelRef.current = channel;
         channel.onmessage = (event) => {
           const { type, payload } = event.data || {};
           if (type === 'SYNC_PRODUCTS' && Array.isArray(payload)) {
-            setProducts(payload);
+            const serialized = JSON.stringify(payload);
+            if (serialized !== lastSyncPayloadRef.current.products) {
+              lastSyncPayloadRef.current.products = serialized;
+              setProducts(payload);
+            }
           } else if (type === 'SYNC_SETTINGS' && payload) {
-            setSettings(prev => ({ ...prev, ...payload }));
+            const serialized = JSON.stringify(payload);
+            if (serialized !== lastSyncPayloadRef.current.settings) {
+              lastSyncPayloadRef.current.settings = serialized;
+              setSettings(payload);
+            }
           } else if (type === 'SYNC_INVOICES' && Array.isArray(payload)) {
-            setInvoices(payload);
+            const serialized = JSON.stringify(payload);
+            if (serialized !== lastSyncPayloadRef.current.invoices) {
+              lastSyncPayloadRef.current.invoices = serialized;
+              setInvoices(payload);
+            }
           } else if (type === 'SYNC_CART' && payload) {
-            setCart(payload);
+            const serialized = JSON.stringify(payload);
+            if (serialized !== lastSyncPayloadRef.current.cart) {
+              lastSyncPayloadRef.current.cart = serialized;
+              setCart(payload);
+            }
           }
         };
       }
@@ -286,18 +220,30 @@ export default function App() {
     const handleStorageChange = (e: StorageEvent) => {
       if (!e.newValue) return;
       try {
-        if (e.key === 'khurshid_products') {
+        if (e.key === 'khurshid_products' && e.newValue !== lastSyncPayloadRef.current.products) {
           const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed)) setProducts(parsed);
-        } else if (e.key === 'khurshid_settings') {
+          if (Array.isArray(parsed)) {
+            lastSyncPayloadRef.current.products = e.newValue;
+            setProducts(parsed);
+          }
+        } else if (e.key === 'khurshid_settings' && e.newValue !== lastSyncPayloadRef.current.settings) {
           const parsed = JSON.parse(e.newValue);
-          if (parsed) setSettings(prev => ({ ...prev, ...parsed }));
-        } else if (e.key === 'khurshid_invoices') {
+          if (parsed) {
+            lastSyncPayloadRef.current.settings = e.newValue;
+            setSettings(parsed);
+          }
+        } else if (e.key === 'khurshid_invoices' && e.newValue !== lastSyncPayloadRef.current.invoices) {
           const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed)) setInvoices(parsed);
-        } else if (e.key === 'khurshid_cart') {
+          if (Array.isArray(parsed)) {
+            lastSyncPayloadRef.current.invoices = e.newValue;
+            setInvoices(parsed);
+          }
+        } else if (e.key === 'khurshid_cart' && e.newValue !== lastSyncPayloadRef.current.cart) {
           const parsed = JSON.parse(e.newValue);
-          if (parsed) setCart(parsed);
+          if (parsed) {
+            lastSyncPayloadRef.current.cart = e.newValue;
+            setCart(parsed);
+          }
         }
       } catch (err) {
         console.error('Error syncing storage event', err);
@@ -308,18 +254,22 @@ export default function App() {
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      if (channel) channel.close();
+      if (channel) {
+        channel.close();
+        broadcastChannelRef.current = null;
+      }
     };
   }, []);
 
-  // Save to localStorage whenever critical state changes and broadcast across tabs
+  // Save to localStorage whenever critical state changes and broadcast across tabs (no echoes)
   useEffect(() => {
     try {
-      localStorage.setItem('khurshid_products', JSON.stringify(products));
-      if (typeof BroadcastChannel !== 'undefined') {
-        const ch = new BroadcastChannel('khurshid_store_channel');
-        ch.postMessage({ type: 'SYNC_PRODUCTS', payload: products });
-        ch.close();
+      const serialized = JSON.stringify(products);
+      if (serialized === lastSyncPayloadRef.current.products) return;
+      lastSyncPayloadRef.current.products = serialized;
+      localStorage.setItem('khurshid_products', serialized);
+      if (broadcastChannelRef.current) {
+        broadcastChannelRef.current.postMessage({ type: 'SYNC_PRODUCTS', payload: products });
       }
     } catch (e) {
       console.warn('Error saving products to localStorage', e);
@@ -328,11 +278,12 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('khurshid_settings', JSON.stringify(settings));
-      if (typeof BroadcastChannel !== 'undefined') {
-        const ch = new BroadcastChannel('khurshid_store_channel');
-        ch.postMessage({ type: 'SYNC_SETTINGS', payload: settings });
-        ch.close();
+      const serialized = JSON.stringify(settings);
+      if (serialized === lastSyncPayloadRef.current.settings) return;
+      lastSyncPayloadRef.current.settings = serialized;
+      localStorage.setItem('khurshid_settings', serialized);
+      if (broadcastChannelRef.current) {
+        broadcastChannelRef.current.postMessage({ type: 'SYNC_SETTINGS', payload: settings });
       }
     } catch (e) {
       console.warn('Error saving settings to localStorage', e);
@@ -341,11 +292,12 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('khurshid_invoices', JSON.stringify(invoices));
-      if (typeof BroadcastChannel !== 'undefined') {
-        const ch = new BroadcastChannel('khurshid_store_channel');
-        ch.postMessage({ type: 'SYNC_INVOICES', payload: invoices });
-        ch.close();
+      const serialized = JSON.stringify(invoices);
+      if (serialized === lastSyncPayloadRef.current.invoices) return;
+      lastSyncPayloadRef.current.invoices = serialized;
+      localStorage.setItem('khurshid_invoices', serialized);
+      if (broadcastChannelRef.current) {
+        broadcastChannelRef.current.postMessage({ type: 'SYNC_INVOICES', payload: invoices });
       }
     } catch (e) {
       console.warn('Error saving invoices to localStorage', e);
@@ -354,11 +306,12 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('khurshid_cart', JSON.stringify(cart));
-      if (typeof BroadcastChannel !== 'undefined') {
-        const ch = new BroadcastChannel('khurshid_store_channel');
-        ch.postMessage({ type: 'SYNC_CART', payload: cart });
-        ch.close();
+      const serialized = JSON.stringify(cart);
+      if (serialized === lastSyncPayloadRef.current.cart) return;
+      lastSyncPayloadRef.current.cart = serialized;
+      localStorage.setItem('khurshid_cart', serialized);
+      if (broadcastChannelRef.current) {
+        broadcastChannelRef.current.postMessage({ type: 'SYNC_CART', payload: cart });
       }
     } catch (e) {
       console.warn('Error saving cart to localStorage', e);
@@ -384,8 +337,8 @@ export default function App() {
     return cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   }, [cartItems]);
 
-  // Cart Actions
-  const handleAddToCart = (product: Product, quantity = 1) => {
+  // Cart Actions (useCallback prevents unnecessary re-renders of ProductCard)
+  const handleAddToCart = useCallback((product: Product, quantity = 1) => {
     if (product.stock <= 0) return;
     setCart(prev => {
       const currentQty = prev[product.id] || 0;
@@ -395,21 +348,19 @@ export default function App() {
         [product.id]: newQty
       };
     });
-  };
+  }, []);
 
-  const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+  const handleUpdateQuantity = useCallback((productId: string, newQuantity: number) => {
     setCart(prev => {
       const copy = { ...prev };
-      const product = products.find(p => p.id === productId);
       if (newQuantity <= 0) {
         delete copy[productId];
       } else {
-        const maxStock = product ? product.stock : newQuantity;
-        copy[productId] = Math.min(maxStock, newQuantity);
+        copy[productId] = newQuantity;
       }
       return copy;
     });
-  };
+  }, []);
 
   const handleRemoveFromCart = (productId: string) => {
     setCart(prev => {
@@ -604,17 +555,12 @@ export default function App() {
           </div>
         </div>
 
-        {/* Scrollable Categories List (Continuous Slow Animated Slider) */}
+        {/* Scrollable Categories List (Fast, Native Hardware-Accelerated Touch Scrolling) */}
         <div 
           ref={categoryScrollRef}
-          onMouseEnter={() => { isUserInteractingRef.current = true; }}
-          onMouseLeave={() => { isUserInteractingRef.current = false; }}
-          onTouchStart={() => { isUserInteractingRef.current = true; }}
-          onTouchEnd={() => pauseAutoSlideTemporarily(2000)}
-          onWheel={() => pauseAutoSlideTemporarily(2000)}
-          className="flex gap-2 overflow-x-auto pb-2 pt-0.5 scrollbar-none touch-pan-x overscroll-x-contain w-full select-none"
+          className="flex gap-2 overflow-x-auto pb-2 pt-0.5 scrollbar-none touch-pan-x overscroll-x-contain w-full select-none scroll-smooth"
         >
-          {duplicatedCategories.map((cat, index) => {
+          {INITIAL_CATEGORIES.map((cat) => {
             const count = cat === 'All Items' 
               ? products.length 
               : products.filter(p => p.category === cat).length;
@@ -622,9 +568,8 @@ export default function App() {
 
             return (
               <button
-                key={`${cat}-${index}`}
-                data-cat-index={index}
-                onClick={() => { setSelectedCategory(cat); pauseAutoSlideTemporarily(3500); }}
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
                 className={`tag-chip shrink-0 font-bold text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-all min-h-[48px] inline-flex items-center gap-2 px-3.5 ${
                   isSelected 
                     ? 'bg-[#2B4430] text-[#F1EAD9] shadow-[2px_2px_0_#241F18]' 

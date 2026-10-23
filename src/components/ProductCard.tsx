@@ -11,7 +11,7 @@ interface ProductCardProps {
   onUpdateQuantity: (productId: string, newQuantity: number) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({
+export const ProductCard: React.FC<ProductCardProps> = React.memo(({
   product,
   quantity,
   priority = false,
@@ -184,4 +184,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
     </div>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';
