@@ -4,20 +4,18 @@ import {
   Mail, 
   MapPin, 
   Clock, 
-  Store, 
-  Lock 
+  Store
 } from 'lucide-react';
 import { StoreSettings } from '../types';
-import { cleanPhoneNumber, sanitizeUrl, formatTelLink } from '../lib/utils';
+import { formatTelLink, sanitizeUrl } from '../lib/utils';
 
 interface FooterProps {
   settings: StoreSettings;
-  onOpenAdmin: () => void;
+  onOpenAdmin?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
-  settings,
-  onOpenAdmin
+  settings
 }) => {
   return (
     <footer id="contact" className="bg-[#152A1C] text-[#DCE6DF] mt-12 border-t-[1.5px] border-[#241F18]">
@@ -207,25 +205,6 @@ export const Footer: React.FC<FooterProps> = ({
             </details>
           </div>
         </section>
-
-        {/* Bottom copyright & Discreet Merchant Access */}
-        <div className="mt-6 pt-4 border-t border-dashed border-white/20 flex flex-col sm:flex-row items-center justify-between text-xs text-[#AFC0B4] gap-2">
-          <div className="font-hand">
-            © {new Date().getFullYear()} {settings.storeName}. Order karein, payment WhatsApp par confirm karein.
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onOpenAdmin}
-              aria-label="Shop owner and staff login"
-              className="text-xs text-[#DCE6DF] hover:text-[#FFE082] flex items-center gap-1.5 cursor-pointer min-h-[48px] px-3 transition-colors"
-              title="Shop Owner Login (#admin)"
-            >
-              <Lock aria-hidden="true" className="w-3 h-3" />
-              <span>Staff / Owner</span>
-            </button>
-          </div>
-        </div>
 
       </div>
     </footer>
