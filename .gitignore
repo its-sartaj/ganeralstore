@@ -5,7 +5,7 @@ coverage/
 .DS_Store
 *.log
 *.exe
-*.cjs
+test_server.cjs
 *.tgz
 .env*
 .system_generated/

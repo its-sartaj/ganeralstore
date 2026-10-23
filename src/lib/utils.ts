@@ -119,7 +119,8 @@ export function generateWhatsAppMessage(invoice: Invoice, settings: StoreSetting
   msg += `Date & Time: ${invoice.dateStr} ${invoice.timeStr}\n`;
   msg += `Customer: *${invoice.customer.name}* (${invoice.customer.phone})\n`;
   if (invoice.customer.address) {
-    msg += `Address: ${invoice.customer.address}\n`;
+    const landmarkPart = invoice.customer.landmark ? ` (Near ${invoice.customer.landmark})` : '';
+    msg += `Address: ${invoice.customer.address}${landmarkPart}\n`;
   }
   msg += `Payment Mode: *${invoice.paymentStatus} (${invoice.customer.paymentMethod.toUpperCase()})*\n`;
   msg += `------------------------------------\n`;

@@ -15,13 +15,13 @@ import {
   Store, 
   MapPin,
   Download,
-  RotateCcw,
-  RefreshCw,
+
+
   Radio,
   Sparkles
 } from 'lucide-react';
 import { Product, StoreSettings, Invoice, CartItem } from '../types';
-import { INITIAL_CATEGORIES, INITIAL_PRODUCTS, STARTER_GROCERY_PRODUCTS } from '../data/initialProducts';
+import { INITIAL_CATEGORIES, INITIAL_PRODUCTS, STARTER_GROCERY_PRODUCTS, DEFAULT_STORE_SETTINGS } from '../data/initialProducts';
 import { formatCurrency, cleanPhoneNumber, sanitizeUrl } from '../lib/utils';
 
 interface AdminPanelProps {
@@ -204,30 +204,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         onUpdateProduct({
           ...editingProduct,
           name: productForm.name.trim(),
-          hindiName: productForm.hindiName.trim(),
+          hindiName: (productForm.hindiName || '').trim(),
           category: productForm.category,
           unit: productForm.unit.trim() || '1 Pack',
           mrp: safeMrp || safePrice,
           price: safePrice,
           stock: safeStock,
           image: safeImage,
-          description: productForm.description.trim(),
-          badge: productForm.badge.trim()
+          description: (productForm.description || '').trim(),
+          badge: (productForm.badge || '').trim()
         });
         showToast(`Product "${productForm.name}" updated ✓`);
       } else {
         const newProduct: Product = {
           id: 'p_' + Date.now(),
           name: productForm.name.trim(),
-          hindiName: productForm.hindiName.trim(),
+          hindiName: (productForm.hindiName || '').trim(),
           category: productForm.category,
           unit: productForm.unit.trim() || '1 Pack',
           mrp: safeMrp || safePrice,
           price: safePrice,
           stock: safeStock,
           image: safeImage,
-          description: productForm.description.trim(),
-          badge: productForm.badge.trim(),
+          description: (productForm.description || '').trim(),
+          badge: (productForm.badge || '').trim(),
           featured: true,
           isPopular: true
         };
@@ -378,16 +378,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       const cleanSettings: StoreSettings = {
         ...settingsForm,
-        storeName: settingsForm.storeName.trim() || 'Khurshid General Store',
-        tagline: settingsForm.tagline.trim() || 'Roz ka Saaman, Ghar Tak',
+        storeName: (settingsForm.storeName || '').trim() || 'Khurshid General Store',
+        tagline: (settingsForm.tagline || '').trim() || 'Roz ka Saaman, Ghar Tak',
         phone1: cleanPhoneNumber(settingsForm.phone1) || '9162288060',
         phone2: cleanPhoneNumber(settingsForm.phone2),
-        email: settingsForm.email.trim(),
-        address: settingsForm.address.trim(),
-        cityState: settingsForm.cityState.trim(),
-        gstNumber: settingsForm.gstNumber.trim(),
-        fssaiNumber: settingsForm.fssaiNumber.trim(),
-        upiId: settingsForm.upiId.trim() || '9162288060@upi',
+        email: (settingsForm.email || '').trim(),
+        address: (settingsForm.address || '').trim() || DEFAULT_STORE_SETTINGS.address,
+        cityState: (settingsForm.cityState || '').trim() || DEFAULT_STORE_SETTINGS.cityState,
+        gstNumber: (settingsForm.gstNumber || '').trim(),
+        fssaiNumber: (settingsForm.fssaiNumber || '').trim(),
+        upiId: (settingsForm.upiId || '').trim() || '9162288060@upi',
         deliveryFee: Math.max(0, Number(settingsForm.deliveryFee) || 0),
         minFreeDelivery: Math.max(0, Number(settingsForm.minFreeDelivery) || 0),
         lowStockThreshold: Math.max(1, Math.floor(Number(settingsForm.lowStockThreshold) || 2)),
@@ -509,7 +509,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </form>
 
             <div className="pt-3 border-t border-dashed border-[#DCD0B4] text-[11px] font-mono text-[#6B6152]">
-              Default password: <strong className="text-[#241F18]">kgs2026</strong>
+              Authorized Store Staff & Owner Access Only
             </div>
 
           </div>
@@ -1437,12 +1437,24 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     />
                   </div>
 
-                  <div className="sm:col-span-2 space-y-1">
+                  <div className="space-y-1">
                     <label className="font-bold text-slate-700">Full Store Address</label>
                     <input
                       type="text"
                       value={settingsForm.address}
                       onChange={(e) => setSettingsForm({ ...settingsForm, address: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700">City, State & Pincode</label>
+                    <input
+                      type="text"
+                      value={settingsForm.cityState}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, cityState: e.target.value })}
+                      placeholder="e.g. Phenhara, Bihar - 845430"
+
                       className="w-full px-3 py-2 rounded-xl border border-[#241F18] bg-[#F1EAD9]/30"
                     />
                   </div>

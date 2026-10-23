@@ -52,7 +52,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(saved);
         // If old Patna placeholder address is stored in localStorage, replace with current new address
-        if (parsed.address && parsed.address.includes('Main Market Road')) {
+        if (parsed.address && (parsed.address.includes('Main Market Road') || parsed.address.includes('Word No.') || parsed.address.includes('Near me Birta'))) {
           parsed.address = DEFAULT_STORE_SETTINGS.address;
           parsed.cityState = DEFAULT_STORE_SETTINGS.cityState;
         }

@@ -6,7 +6,7 @@
   "description": "Khurshid General Store — Roz ka Saaman, Ghar Tak. Modern Online Grocery Store & Billing System.",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/sync-build.cjs",
     "preview": "vite preview",
     "lint": "tsc --noEmit"
   },

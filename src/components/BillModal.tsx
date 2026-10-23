@@ -146,12 +146,16 @@ export const BillModal: React.FC<BillModalProps> = ({
     // Open whatsapp with customer phone if valid 10 digits, otherwise store phone
     const cleanedCustomerPhone = cleanPhoneNumber(invoice.customer.phone);
     const cleanedStorePhone = cleanPhoneNumber(settings.phone1);
-    const targetPhone = cleanedCustomerPhone.length === 10 ? `91${cleanedCustomerPhone}` : `91${cleanedStorePhone}`;
+    // If admin is viewing an existing invoice, share with customer if valid phone exists;
+    // If customer generated bill, send order to the store so store owner receives it
+    const targetPhone = (initialInvoice && cleanedCustomerPhone.length === 10)
+      ? `91${cleanedCustomerPhone}`
+      : `91${cleanedStorePhone}`;
     window.open(`https://wa.me/${targetPhone}?text=${msg}`, '_blank');
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
+    <div className="fixed inset-0 z-[60] overflow-y-auto bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
       
       <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-scale-in">
         
@@ -337,7 +341,7 @@ export const BillModal: React.FC<BillModalProps> = ({
                       <label className="text-xs font-medium text-slate-600">Pin Code</label>
                       <input
                         type="text"
-                        placeholder="800001"
+                        placeholder="845430"
                         value={customer.pincode}
                         onChange={(e) => setCustomer({ ...customer, pincode: e.target.value })}
                         className="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono"
@@ -424,10 +428,10 @@ export const BillModal: React.FC<BillModalProps> = ({
                       type="button"
                       onClick={handleWhatsAppShare}
                       className="inline-flex items-center gap-1.5 px-3 py-2 min-h-[48px] rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs cursor-pointer transition-colors"
-                      title="Share Bill via WhatsApp"
+                      title={initialInvoice ? "Share Bill with Customer on WhatsApp" : "Send Order to Store on WhatsApp"}
                     >
                       <MessageCircle className="w-4 h-4" />
-                      <span>WhatsApp Bill</span>
+                      <span>{initialInvoice ? "WhatsApp to Customer" : "Send Order on WhatsApp"}</span>
                     </button>
 
                     {/* UPI QR Code Trigger */}

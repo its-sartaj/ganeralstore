@@ -6,7 +6,7 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   phone1: "9162288060",
   phone2: "8587079786",
   email: "contact@khurshidstore.in",
-  address: "Rupaulia Birta Road, Near me Birta Masjid, Word No. 11",
+  address: "Rupaulia Birta Road, Near Birta Masjid, Ward No. 11",
   cityState: "Phenhara, Bihar - 845430",
   gstNumber: "10ABCDE1234F1Z5",
   fssaiNumber: "10423000001289",
