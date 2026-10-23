@@ -17,9 +17,8 @@ import { ProductCard } from './components/ProductCard';
 import { CartDrawer } from './components/CartDrawer';
 import { Footer } from './components/Footer';
 
-// Code-split heavy modals to ensure customer storefront bundle is ultra-lightweight
-const BillModal = React.lazy(() => import('./components/BillModal').then(m => ({ default: m.BillModal })));
-const AdminPanel = React.lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
+import { BillModal } from './components/BillModal';
+import { AdminPanel } from './components/AdminPanel';
 
 export default function App() {
   // 1. Persistent State Initialization
